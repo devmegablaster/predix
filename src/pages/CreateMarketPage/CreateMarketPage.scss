@@ -1,0 +1,285 @@
+.createmarket {
+  margin-top: 10vh;
+  @apply px-32 py-4 flex w-full flex-col;
+  &_main {
+    @apply flex flex-col mt-8 w-full;
+    &_title {
+      @apply text-white text-3xl font-black;
+    }
+    &_subtitle {
+      @apply text-sm font-medium mt-3 text-white;
+    }
+    &_header {
+      @apply relative flex w-full gap-10 px-6 py-3 mt-6 items-center border-b overflow-x-auto;
+      border-color: #494949;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      &_tabs {
+        @apply flex w-full space-x-16 justify-between text-xl font-semibold;
+        color: #494949;
+        &_text {
+          @apply text-xl font-bold;
+        }
+        &:last-child {
+          @apply mr-20;
+        }
+      }
+    }
+    &_container {
+      @apply mt-8 flex flex-col w-full rounded-lg relative;
+      border: 2px solid var(--border, #252525);
+
+      &_footer {
+        @apply flex w-full justify-between items-center p-6;
+        background: var(--material-90, #1d1d1d);
+        &_disclaimertext {
+          @apply font-semibold text-lg;
+          color: #646464;
+          span {
+            color: #f55571;
+          }
+        }
+        &_buttoncontainer {
+          @apply flex gap-3 items-center text-lg font-semibold;
+          &_previous {
+            color: #d4d5f9;
+            @apply cursor-pointer;
+          }
+          &_next {
+            @apply cursor-pointer rounded-lg px-4 py-3;
+            color: #101012;
+            background: #d4d5f9;
+          }
+        }
+      }
+    }
+  }
+}
+
+.marketdetails {
+  @apply flex flex-col p-6 gap-6;
+  &_inputcontainer {
+    @apply flex flex-col w-full;
+    &_titlecontainer {
+      @apply flex justify-between items-center;
+      &_title {
+        @apply text-lg font-semibold text-white;
+        span {
+          color: #f55571;
+        }
+      }
+      &_criteria {
+        @apply text-sm;
+        color: #646464;
+        span {
+          @apply text-white;
+        }
+      }
+    }
+
+    &_input {
+      @apply bg-inherit rounded-lg px-4 py-3 text-white mt-2 mb-1 outline-none;
+      border: 1px solid var(--light-text, #646464);
+    }
+    &_subtext {
+      @apply text-sm;
+      color: #646464;
+    }
+  }
+  &_dropdown {
+    position: relative;
+    @apply bg-inherit rounded-lg px-4 py-3 text-white mt-2 mb-1 outline-none cursor-pointer w-full;
+    border: 1px solid var(--light-text, #646464);
+    appearance: none;
+    width: 100%;
+    background-image: url("../../assets/dropdown.svg");
+    background-repeat: no-repeat;
+    background-position: 98% center;
+    background-size: 20px;
+    padding-right: 32px;
+
+    option {
+      background-color: #1e2139;
+      color: #ffffff;
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-bottom: 2px solid white;
+      border-right: 2px solid white;
+      transform: rotate(45deg);
+      pointer-events: none;
+    }
+  }
+  &_halfcontainer {
+    @apply flex gap-6 w-full;
+  }
+}
+.chooseoutcome {
+  @apply flex flex-col p-6 gap-6 w-full;
+  &_title {
+    @apply text-white text-lg font-semibold;
+  }
+  &_outcome {
+    @apply flex w-full;
+    &_left {
+      @apply flex gap-2 w-full;
+      width: 95%;
+      &_input {
+        @apply rounded-lg w-full mr-3 pl-12 pr-4 py-3 outline-none text-white bg-inherit bg-no-repeat;
+        border: 1.5px solid var(--border, #252525);
+        background-position: 20px 50%;
+      }
+    }
+    &_right {
+      @apply p-2 rounded-lg flex justify-center cursor-pointer;
+      width: 5%;
+      background: var(--material-90, #1d1d1d);
+    }
+  }
+  &_addbutton {
+    @apply mt-4 rounded-lg cursor-pointer px-4 py-3 text-lg font-semibold w-fit;
+    color: var(--brand-purple, #d4d5f9);
+    border: 1px solid var(--brand-purple, #d4d5f9);
+  }
+}
+.fundinginfo {
+  @apply flex flex-col p-6 gap-6 w-full;
+  &_wallet {
+    @apply flex flex-col w-full;
+    &_title {
+      @apply flex justify-between;
+      span {
+        @apply text-white text-lg font-medium;
+        span {
+          color: #646464;
+        }
+      }
+    }
+    &_input {
+      @apply px-4 py-3 rounded-lg mt-4 text-white outline-none;
+      border: 1px solid #282828;
+      background: transparent;
+      &:focus {
+        border: 1px solid #7d7b7b;
+        box-shadow: 0px 0px 0px 2px rgba(255, 255, 255, 0.25);
+        background: var(--material-90, #1d1d1d);
+      }
+    }
+    &_feescontainer {
+      @apply mt-4 flex justify-between items-center text-white font-medium;
+      &_inputcontainer {
+        @apply flex;
+        border: 1px solid var(--light-text, #646464);
+        border-radius: 8px 8px;
+        div {
+          @apply px-6 py-4 cursor-pointer;
+          background: var(--material-90, #1d1d1d);
+          border: 1px solid var(--light-text, #646464);
+
+          &:first-child {
+            border-radius: 8px 0 0 8px;
+          }
+        }
+        input {
+          @apply px-4 py-3 rounded-lg text-white outline-none;
+          background: transparent;
+        }
+      }
+    }
+  }
+  &_preview {
+    @apply p-6 flex flex-col rounded-lg;
+    background: rgba(182, 247, 43, 0.1);
+    &_title {
+      @apply text-xl font-bold pb-6;
+      color: var(--green, #b6f72b);
+    }
+    &_card {
+      @apply rounded-lg flex flex-col w-full text-white;
+      background-color: #0a0a0a;
+      &_top {
+        @apply flex w-full p-6;
+        &_left {
+          @apply w-2/12;
+        }
+        &_right {
+          @apply w-10/12;
+          &_title {
+            @apply font-medium text-lg;
+          }
+          &_detailcontainer {
+            @apply flex w-full gap-4 mt-4;
+            &_card {
+              @apply rounded-lg flex flex-col justify-center items-center w-full p-4;
+              background: #101010;
+              border: 2px solid var(--border, #252525);
+              &_title {
+                @apply text-lg font-semibold;
+              }
+              &_subtitle {
+                @apply mt-1;
+                color: #a5a5a5;
+              }
+            }
+          }
+        }
+      }
+      &_footer {
+        @apply flex justify-between items-center w-full p-6;
+        border-top: 1px solid #252525;
+        &_left {
+          @apply px-3 py-2 rounded-md flex;
+          border: 1px solid var(--border-1, #222);
+          background: #1b1b1b;
+          color: #9694fc;
+          img {
+            @apply mr-2;
+          }
+        }
+        &_right {
+          @apply flex;
+          &_event {
+            @apply flex;
+          }
+        }
+      }
+    }
+  }
+}
+
+.tar_c {
+  @apply flex items-center justify-around rounded-xl h-14;
+  border: 1.5px solid var(--border, #252525);
+  background: #080808;
+}
+.tar_h {
+  @apply transform absolute left-1 top-1 h-12 rounded-xl transition;
+  width: 119px;
+  border: 1px solid var(--header, #fff);
+  background: var(--material-90, #1d1d1d);
+}
+.text-gray {
+  color: #dadada;
+}
+.tar_text {
+  @apply font-bold z-10 w-1/2 text-center;
+}
+
+.tp_c {
+  @apply flex items-center justify-around rounded-xl h-14;
+  border: 1.5px solid var(--border, #252525);
+  background: #080808;
+}
+.tp_h {
+  @apply transform absolute left-1 top-1 h-12 rounded-xl transition;
+  width: 188px;
+  border: 1px solid var(--header, #fff);
+  background: var(--material-90, #1d1d1d);
+}

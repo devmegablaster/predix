@@ -1,0 +1,70 @@
+.leaderboard {
+  margin-top: 10vh;
+  @apply px-96 py-4 flex w-full;
+  &_main {
+    @apply flex w-full flex-col;
+    &_banner {
+      width: 100%;
+    }
+    &_content {
+      @apply rounded-lg mt-12;
+      border: 2px solid var(--border, #252525);
+      background: var(--material-100, #090909);
+      box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.12);
+      &_header {
+        @apply flex w-full px-20 py-8 gap-8;
+        border-bottom: 1px solid #3D3D3D;
+        &_tab {
+          @apply flex w-full justify-center gap-2 text-2xl font-black cursor-pointer;
+          color: var(--light-text, #646464);
+        }
+        .active {
+          color: white;
+        }
+      }
+      &_datefiltercontainer{
+        @apply flex gap-6 px-6 py-4;
+        border-bottom: 1px solid #3D3D3D;
+
+        &_button{
+            @apply px-5 py-2 rounded-lg text-center cursor-pointer font-bold;
+            color: #828282;
+
+        }
+        .active{
+            @apply bg-white;
+            color: var(--brand-black, #101012);
+
+
+        }
+      }
+      &_usercontainer{
+        @apply flex flex-col;
+        &_row{
+            @apply flex font-medium text-lg text-white py-2.5;
+            &_serial{
+                flex-basis: 10%;
+                align-self: center;
+                text-align: center;
+            }
+            &_name{
+                @apply flex px-6 gap-2;
+                flex-basis: 45%;
+
+            }
+            &_value{
+                flex-basis: 45%;
+                text-align: end;
+                @apply px-6;
+            }
+            &:first-child{
+                @apply mt-4;
+            }
+            &:last-child{
+                @apply mb-4;
+            }
+        }
+      }
+    }
+  }
+}

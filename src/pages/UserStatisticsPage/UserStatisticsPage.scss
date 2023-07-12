@@ -1,0 +1,238 @@
+.userstatistics {
+  margin-top: 10vh;
+  @apply px-40 py-4 flex w-full;
+  &_main {
+    @apply flex flex-col w-full gap-6;
+    &_statscontainer {
+      @apply flex w-full gap-6;
+      &_left {
+        width: 50%;
+        @apply flex flex-col gap-6;
+        &_wallet {
+          @apply rounded-lg flex flex-col w-full p-8;
+          border: 2px solid var(--border, #252525);
+          background: var(--material-100, #090909);
+          box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.12);
+          &_title {
+            @apply text-white text-xl font-semibold mr-4 flex;
+            img {
+              @apply ml-2;
+            }
+          }
+          &_subtext {
+            @apply flex gap-8 text-xs mt-4;
+            color: #646464;
+            div {
+              @apply mr-2;
+              span {
+                @apply text-white;
+              }
+            }
+          }
+        }
+        &_other {
+          @apply rounded-lg flex flex-col w-full p-6;
+          border: 2px solid var(--border, #252525);
+          background: linear-gradient(
+            129deg,
+            #131313 0%,
+            rgba(26, 26, 26, 0) 100%
+          );
+          box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.12);
+          &_title {
+            @apply text-white text-xl font-semibold pb-3 flex;
+          }
+          &_details {
+            @apply flex flex-col mt-4 gap-3;
+            &_container {
+              @apply flex justify-between font-medium;
+              color: #646464;
+
+              &_subtext {
+                @apply text-white;
+                span {
+                  color: #646464;
+                }
+              }
+            }
+          }
+        }
+      }
+      &_right {
+        width: 50%;
+        @apply flex flex-col rounded-lg;
+        border: 2px solid var(--border, #252525);
+        background: var(--material-100, #090909);
+        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.12);
+        &_header {
+          @apply text-2xl flex gap-4 font-black text-white p-6;
+          border-bottom: 1.5px solid var(--material-90, #1d1d1d);
+        }
+        &_body {
+          @apply flex flex-col gap-6 p-6 h-full w-full;
+          &_earning {
+            @apply flex flex-col p-6 h-full w-full rounded-lg justify-center;
+            border: 1.5px solid #252525;
+            &_title {
+              color: #a5a5a5;
+            }
+            &_subtitle {
+              @apply font-semibold text-2xl mt-1;
+              color: #f55571;
+            }
+          }
+          &_other {
+            @apply flex flex-col p-6 h-full w-full rounded-lg justify-center;
+            border: 1.5px solid #252525;
+            background: #101010;
+            &_title {
+              color: #a5a5a5;
+            }
+            &_subtitle {
+              @apply text-white font-semibold text-2xl mt-1;
+            }
+          }
+        }
+      }
+    }
+    &_positioncontainer {
+      @apply flex flex-col rounded-lg;
+      border: 2px solid var(--border, #252525);
+      background: var(--material-100, #090909);
+      box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.12);
+      &_header {
+        @apply flex justify-between p-6;
+        border-bottom: 1.5px solid var(--material-90, #1d1d1d);
+      }
+      &_table {
+        border-radius: 5px;
+        color: #828282;
+        @apply m-6;
+        &_header {
+          border: 1px solid #292929;
+          @apply rounded-lg flex font-bold gap-0.5;
+          &_column {
+            background: #272727;
+            // flex: 1;
+            padding: 10px;
+            &:first-child {
+              border-radius: 8px 0px 0px 8px;
+            }
+            &:last-child {
+              border-radius: 0px 8px 8px 0px;
+            }
+          }
+        }
+        &_body {
+          &_row {
+            @apply flex items-center gap-0.5;
+            // padding: 10px;
+            text-overflow: ellipsis;
+
+            &:last-child {
+              border-bottom: none;
+            }
+          }
+          &_column {
+            padding: 10px;
+          }
+        }
+        //   .action_column,
+        //   .outcome_column,
+        //   .quantity_column {
+        //     flex-basis: 15%; /* Adjust the width for other columns */
+        //   }
+        .market_column {
+          flex-basis: 15%;
+        }
+        .outcome_column,
+        .price_column,
+        .profitloss_column,
+        .shares_column,
+        .value_column,
+        .maxpayout_column {
+          flex-basis: 12%;
+        }
+        .status_column {
+          flex-basis: 13%;
+        }
+      }
+    }
+    &_activitycontainer {
+      @apply flex flex-col rounded-lg;
+      border: 2px solid var(--border, #252525);
+      background: var(--material-100, #090909);
+      box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.12);
+      &_header {
+        @apply flex justify-between items-center text-white p-6;
+        border-bottom: 1.5px solid var(--material-90, #1d1d1d);
+        &_left {
+          @apply text-2xl flex gap-4 font-black;
+        }
+        &_right {
+          @apply text-sm font-medium cursor-pointer;
+          &_searchinput {
+            @apply rounded-lg pl-12 pr-4 py-3 w-80 outline-none bg-inherit bg-no-repeat;
+            border: 1.5px solid var(--border, #252525);
+            color: var(--light-text, #646464);
+
+            background-image: url(../../assets/seach_icon.svg);
+            background-position: 10px 50%;
+          }
+        }
+      }
+      &_body {
+        @apply flex flex-col w-full p-6 gap-6;
+        &_card {
+          @apply flex flex-col rounded-lg;
+          border: 2px solid var(--border, #252525);
+          &_header {
+            @apply flex justify-between items-center p-4;
+            background: var(--border-1, #222);
+            &_left {
+              @apply flex gap-2 font-medium;
+              color: var(--brand-purple, #d4d5f9);
+            }
+            &_right {
+              @apply text-xs font-semibold;
+              color: var(--light-text, #646464);
+            }
+          }
+          &_body {
+            @apply flex items-center w-full h-full px-6 py-3 gap-8 justify-between;
+            &_left {
+              @apply flex flex-col justify-between h-full w-10/12 py-2;
+              &_title {
+                overflow: hidden;
+                color: #f9fafb;
+                @apply text-base whitespace-nowrap text-ellipsis font-semibold;
+              }
+              &_others {
+                @apply flex w-full justify-between text-sm;
+                color: #B1B1B1;
+                &_left{
+                    @apply flex gap-4 w-full;
+                    &_detail{
+                        @apply flex items-center;
+                        img{
+                            @apply mr-2 h-4;
+                        }
+                    }
+                }
+                &_right{
+                    @apply flex w-full text-center items-center justify-end;
+                    img{
+                        @apply mr-2 h-4;
+                    }
+                }
+              }
+            }
+            &_right {
+                @apply flex justify-end w-2/12;
+            }
+          }
+        }
+      }
+    }
+  }
+}

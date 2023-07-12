@@ -1,0 +1,32 @@
+.tar_c{
+    @apply flex items-center justify-around rounded-xl h-14;
+    border: 1.5px solid var(--border, #252525);
+    background: #080808;
+
+}
+.tar_h{
+@apply transform absolute left-1 top-1 h-12 rounded-xl transition;
+width: 119px;
+border: 1px solid var(--header, #FFF);
+background: var(--material-90, #1D1D1D);
+
+}
+.text-gray{
+    color: #DADADA;
+}
+.tar_text{
+    @apply font-bold z-10 w-1/2 text-center;
+}
+
+.tp_c{
+    @apply flex items-center justify-around rounded-xl h-14;
+    border: 1.5px solid var(--border, #252525);
+    background: #080808;
+}
+.tp_h{
+@apply transform absolute left-1 top-1 h-12 rounded-xl transition;
+width: 188px;
+border: 1px solid var(--header, #FFF);
+background: var(--material-90, #1D1D1D);
+
+}

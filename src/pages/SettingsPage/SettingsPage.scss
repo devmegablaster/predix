@@ -1,0 +1,125 @@
+.settings {
+  margin-top: 10vh;
+  @apply px-96 py-4 flex w-full;
+  background: url(../../assets/settings_background.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  &_main {
+    @apply flex w-full flex-col;
+    &_banner {
+      width: 100%;
+    }
+    &_content {
+      @apply flex flex-col mt-12;
+      &_accountcontainer {
+        @apply flex flex-col rounded-lg;
+        border: 2px solid var(--border, #252525);
+        background: var(--material-100, #090909);
+        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.12);
+        &_header {
+          @apply flex justify-between items-center text-white p-6;
+          border-bottom: 1.5px solid var(--material-90, #1d1d1d);
+          &_left {
+            @apply text-2xl flex gap-4 font-black;
+          }
+          &_right {
+            @apply text-lg font-semibold cursor-pointer;
+          }
+        }
+        &_body {
+          @apply flex flex-col w-full px-6 pb-6;
+          &_inputcontainer {
+            @apply flex flex-col w-full gap-2 mt-6;
+
+            &_title {
+              @apply text-white text-lg font-semibold;
+            }
+            &_subtitle {
+              margin-top: -4px;
+              color: var(--light-text, #646464);
+              @apply text-sm;
+            }
+            &_input {
+              @apply px-4 py-3 rounded-lg text-white outline-none;
+              border: 1px solid #282828;
+              background: transparent;
+              &:focus {
+                border: 1px solid #fff;
+                box-shadow: 0px 0px 0px 2px rgba(255, 255, 255, 0.25);
+                background: var(--material-90, #1d1d1d);
+              }
+            }
+          }
+          &_buttoncontainer {
+            @apply flex gap-3 mt-6;
+            .button {
+              @apply rounded-lg p-3 text-center flex w-full justify-center font-bold cursor-pointer;
+            }
+            &_cancel {
+              border: 1.5px solid var(--border, #252525);
+              color: white;
+            }
+            &_save {
+              background: var(--brand-purple, #d4d5f9);
+              color: var(--brand-black, #101012);
+            }
+          }
+        }
+      }
+      &_emailcontainer {
+        @apply flex flex-col rounded-lg mt-12;
+        border: 2px solid var(--border, #252525);
+        background: var(--material-100, #090909);
+        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.12);
+        &_header {
+          @apply flex justify-between items-center text-white p-6;
+          border-bottom: 1.5px solid var(--material-90, #1d1d1d);
+          &_left {
+            @apply text-2xl flex gap-4 font-black;
+          }
+          &_right {
+            @apply text-lg font-semibold cursor-pointer;
+          }
+        }
+        &_body {
+          @apply flex flex-col w-full px-6 py-3;
+          &_togglecontainer {
+            @apply flex justify-between py-3;
+            &_title {
+              @apply text-white text-lg font-semibold;
+            }
+            .toggle-switch {
+              width: 50px;
+              height: 30px;
+              background-color: inherit;
+              border-radius: 20px;
+              @apply relative inline-block cursor-pointer;
+              border: 1px solid var(--material-90, #1d1d1d);
+            }
+
+            .toggle-slider {
+              position: absolute;
+              top: 2px;
+              left: 2px;
+              width: 24px;
+              height: 24px;
+              border: 1px solid var(--light-text, #646464);
+              background: var(--border, #252525);
+              border-radius: 50%;
+              transition: transform 0.2s ease-in-out;
+            }
+
+            .toggle-switch.enabled {
+              background: var(--brand-purple, #d4d5f9);
+            }
+
+            .toggle-switch.enabled .toggle-slider {
+              transform: translateX(20px);
+            }
+          }
+        }
+      }
+    }
+  }
+}
