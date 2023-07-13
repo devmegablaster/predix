@@ -1,0 +1,127 @@
+.landing {
+  margin-top: 10vh;
+  @apply flex w-full;
+  &_main {
+    @apply flex w-full flex-col;
+    &_banner {
+      width: 100%;
+    }
+    &_content {
+      @apply flex flex-col w-full;
+      &_markets {
+        @apply flex flex-col items-center py-16 px-32;
+        &_title {
+          @apply text-white text-5xl font-black pb-5;
+        }
+        &_allbutton {
+          @apply mt-8 px-8 py-4 text-lg rounded-lg font-semibold;
+          color: #101012;
+          background: var(--brand-purple, #d4d5f9);
+        }
+      }
+      &_getstarted {
+        @apply flex flex-col w-full items-center py-16 text-white;
+        background: url(../../assets/BGGetStarted.svg);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        &_title {
+          @apply text-5xl font-black pb-5 text-center;
+        }
+        &_cards {
+          @apply py-16 flex flex-col w-5/12 gap-48;
+          &_card {
+            @apply flex w-full p-6 gap-6 items-center rounded-lg;
+            border: 1px solid #2b2b2b;
+            background: linear-gradient(129deg, #292929 0%, #090909 100%);
+            &_left {
+              @apply w-2/5;
+              img {
+                width: 100%;
+              }
+            }
+            &_right {
+              @apply w-3/5;
+              &_title {
+                @apply text-4xl font-bold;
+              }
+              &_subtitle {
+                @apply text-xl mt-4 font-semibold;
+                color: rgba(251, 251, 251, 0.5);
+              }
+            }
+          }
+        }
+      }
+      &_features {
+        @apply flex flex-col items-center py-16 px-32 text-white;
+        &_title {
+          @apply text-5xl font-black pb-5 text-center;
+        }
+        &_subtitle {
+          @apply text-lg;
+          color: var(--text-grey, #dadada);
+        }
+        &_cards {
+          @apply flex gap-4 w-full mt-8;
+          &_card {
+            @apply flex flex-col w-full rounded-2xl p-8;
+            background: #121212;
+            &_top {
+            }
+            &_bottom {
+              @apply flex flex-col gap-4 mt-6;
+              &_title {
+                @apply text-2xl font-semibold;
+              }
+              &_subtitle {
+                color: #919191;
+              }
+            }
+          }
+        }
+      }
+      &_bottom {
+        @apply flex flex-col w-full items-center justify-center py-16 text-white;
+        background: url(../../assets/landingbottom.svg);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        &_title {
+          @apply text-5xl font-bold;
+        }
+        &_subtitle {
+          @apply text-2xl mt-2 font-semibold;
+          color: rgba(255, 255, 255, 0.75);
+        }
+      }
+      &_footer{
+                @apply flex justify-between py-16 px-8 text-white;
+                &_left{
+                    &_logo{
+                        img{ @apply h-16;
+                        }
+                    }
+                }
+                &_middle{
+                    @apply flex flex-col;
+                    &_text{
+                        @apply font-medium text-lg pb-3;
+                    }
+                    &_subtext{
+                        @apply font-medium text-sm pb-4;
+                    }
+                }
+                &_right{
+                    @apply flex flex-col pr-6;
+                    &_text{
+                        @apply font-medium text-lg;
+                    }
+                    &_socials{
+                        @apply flex gap-2 mt-2;
+                    }
+                }
+      }
+    }
+  }
+}

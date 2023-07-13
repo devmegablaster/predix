@@ -7,10 +7,11 @@ import LeaderboardPage from "./pages/LeaderboardPage/LeaderboardPage";
 import SettingsPage from "./pages/SettingsPage/SettingsPage";
 import UserStatisticsPage from "./pages/UserStatisticsPage/UserStatisticsPage";
 import CreateMarketPage from "./pages/CreateMarketPage/CreateMarketPage";
+import LandingPage from "./pages/LandingPage/LandingPage";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<MarketsPage />} />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/markets" element={<MarketsPage />} />
       <Route path="/event/:id" element={<EventPage />} />
       <Route path="/leaderboard" element={<LeaderboardPage />} />

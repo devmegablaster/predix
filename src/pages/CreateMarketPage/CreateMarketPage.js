@@ -151,6 +151,7 @@ export default function CreateMarketPage() {
         usdcAddress,
         usdcPublicKey,
       } = getAccountAddresses(uuid, publicKey, ProgramID);
+
       const program = new Program(ProgramIDL, ProgramID, provider);
       const token_ata = await getAssociatedTokenAddress(
         usdcPublicKey,
@@ -161,28 +162,38 @@ export default function CreateMarketPage() {
       );
       console.log("vpda", eventBump);
       console.log("data_acccount", eventAccount);
+      const usdcKey = web3.Keypair.generate();
+
+      const usdc_ata = await getAssociatedTokenAddress(
+        usdcKey.publicKey,
+        provider.wallet.publicKey,
+        false,
+        TOKEN_PROGRAM_ID,
+        ASSOCIATED_TOKEN_PROGRAM_ID
+      );
+
       try {
-        const ix = await program.methods
-          .createMarket(
-            uuid,
-            eventCloseTime,
-            "Admin",
-            "",
-            "=",
-            lowerBound,
-            upperBound,
-            0.0,
-            numOutcomes
-          )
-          .accounts({
-            authority: publicKey,
-            adminAccount: adminAddress,
-            systemProgram: SystemProgram.programId,
-            createMarket: eventAccount,
-            tokenMint: usdcPublicKey,
-            vaultUsdc: vaultAddress,
-          })
-          .rpc();
+        // const ix = await program.methods
+        //   .createMarket(
+        //     uuid,
+        //     eventCloseTime,
+        //     "Admin",
+        //     "",
+        //     "=",
+        //     lowerBound,
+        //     upperBound,
+        //     0.0,
+        //     numOutcomes
+        //   )
+        //   .accounts({
+        //     authority: publicKey,
+        //     adminAccount: adminAddress,
+        //     systemProgram: SystemProgram.programId,
+        //     createMarket: eventAccount,
+        //     tokenMint: usdcPublicKey,
+        //     vaultUsdc: vaultAddress,
+        //   })
+        //   .rpc();
 
         const ix2 = await program.methods
           .adminAddLiquidity(uuid, vaultBump, new BN(1000000000))
