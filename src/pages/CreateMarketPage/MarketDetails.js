@@ -42,7 +42,7 @@ export default function MarketDetails({inputData, setInputData}) {
         subcategory: e.target.value,
       }));
     };
-  const resolutionOptions = ["Pyth", "Admin"];
+  const resolutionOptions = ["Pyth", "Admin", "Switchboard"];
 
   const categoryOptions = ["Crypto", "Entertainment", "NFT", "Others"];
 
@@ -104,7 +104,7 @@ export default function MarketDetails({inputData, setInputData}) {
         <div className="marketdetails_inputcontainer">
           <div className="marketdetails_inputcontainer_titlecontainer">
             <div className="marketdetails_inputcontainer_titlecontainer_title">
-              Subcategory
+              Resolution Source
             </div>
           </div>
           <select
@@ -113,7 +113,7 @@ export default function MarketDetails({inputData, setInputData}) {
             className="marketdetails_inputcontainer_input marketdetails_dropdown"
             onChange={handleResolutionTypeChange}
           >
-            <option value="">Select a subcategory</option>
+            <option value="">Select a resolution source</option>
             {resolutionOptions.map((option) => (
               <option value={option} key={option}>
                 {option}

@@ -24,13 +24,12 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { v4 as uuidv4 } from "uuid";
-
+import { getAccountAddresses } from "../../utils/createMarketFunctions.js";
 
 export default function CreateMarketPage() {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
-    const [mode, setMode] = useState("single");
-
+  const [mode, setMode] = useState("single");
 
   const { publicKey, sendTransaction } = useWallet();
   const ProgramID = new PublicKey(ProgramIDL.metadata.address);
@@ -68,7 +67,12 @@ export default function CreateMarketPage() {
     {
       label: "Choose Outcomes",
       component: (
-        <ChooseOutcome mode={mode} setMode={setMode} inputData={inputData} setInputData={setInputData} />
+        <ChooseOutcome
+          mode={mode}
+          setMode={setMode}
+          inputData={inputData}
+          setInputData={setInputData}
+        />
       ),
     },
     {
@@ -105,35 +109,51 @@ export default function CreateMarketPage() {
   const handlePrevious = () => {
     setActiveTabIndex(activeTabIndex - 1);
   };
+  const getMarketDetails = () => {
+    let lowerBound = [];
+    let upperBound = [];
+    let numOutcomes = inputData.outcomesLower.length;
+    const eventCloseTime = new BN(
+      Math.floor(inputData.closeDateTime.getTime() / 1000)
+    );
 
+    if (mode === "single") {
+      lowerBound = inputData.outcomesLower.map((_, index) => index);
+      upperBound = lowerBound;
+    } else if (mode === "range") {
+      lowerBound = inputData.outcomesLower;
+      upperBound = inputData.outcomesUpper;
+    }
+
+    return {
+      lowerBound,
+      upperBound,
+      numOutcomes,
+      eventCloseTime,
+    };
+  };
   const handleNext = async () => {
     if (isLastStep) {
       if (!publicKey) throw new WalletNotConnectedError();
-      const program = new Program(ProgramIDL, ProgramID, provider);
-      const uuid = "5";
 
-      const [eventAccount, eventBump] = PublicKey.findProgramAddressSync(
-        [Buffer.from("event"), Buffer.from(uuid)],
-        ProgramID
-      );
-      const [adminAddress, adminBump] = PublicKey.findProgramAddressSync(
-        [Buffer.from("admin"), publicKey.toBuffer()],
-        ProgramID
-      );
-      const [vaultAddress, vaultBump] = PublicKey.findProgramAddressSync(
-        [Buffer.from("usdc-vault"), Buffer.from(uuid)],
-        ProgramID
-      );
-      const [userStateAddress, userStateBump] =
-        PublicKey.findProgramAddressSync(
-          [Buffer.from("user_share"), Buffer.from(uuid), publicKey.toBuffer()],
-          ProgramID
-        );
-      const usdcPublicAddress = "2F3m7HkXbkGPfbUWY2r2cq4quuvkdfhVpN83svGssdhy";
-      const randomVar = new PublicKey(usdcPublicAddress);
-      console.log("rr", randomVar);
+      const uuid = "5";
+      const { lowerBound, upperBound, numOutcomes, eventCloseTime } =
+        getMarketDetails();
+      const {
+        eventAccount,
+        eventBump,
+        adminAddress,
+        adminBump,
+        vaultAddress,
+        vaultBump,
+        userStateAddress,
+        userStateBump,
+        usdcAddress,
+        usdcPublicKey,
+      } = getAccountAddresses(uuid, publicKey, ProgramID);
+      const program = new Program(ProgramIDL, ProgramID, provider);
       const token_ata = await getAssociatedTokenAddress(
-        new PublicKey(usdcPublicAddress),
+        usdcPublicKey,
         publicKey,
         false,
         TOKEN_PROGRAM_ID,
@@ -142,27 +162,27 @@ export default function CreateMarketPage() {
       console.log("vpda", eventBump);
       console.log("data_acccount", eventAccount);
       try {
-        // const ix = await program.methods
-        //   .createMarket(
-        //     uuid,
-        //     new BN(Math.floor(inputData.closeDateTime.getTime() / 1000)),
-        //     "Admin",
-        //     "",
-        //     "=",
-        //     [1, 2, 3, 4],
-        //     [1, 2, 3, 4],
-        //     0.0,
-        //     4
-        //   )
-        //   .accounts({
-        //     authority: publicKey,
-        //     adminAccount: adminAddress,
-        //     systemProgram: SystemProgram.programId,
-        //     createMarket: eventAccount,
-        //     tokenMint: randomVar,
-        //     vaultUsdc: vaultAddress,
-        //   })
-        //   .rpc();
+        const ix = await program.methods
+          .createMarket(
+            uuid,
+            eventCloseTime,
+            "Admin",
+            "",
+            "=",
+            lowerBound,
+            upperBound,
+            0.0,
+            numOutcomes
+          )
+          .accounts({
+            authority: publicKey,
+            adminAccount: adminAddress,
+            systemProgram: SystemProgram.programId,
+            createMarket: eventAccount,
+            tokenMint: usdcPublicKey,
+            vaultUsdc: vaultAddress,
+          })
+          .rpc();
 
         const ix2 = await program.methods
           .adminAddLiquidity(uuid, vaultBump, new BN(1000000000))
@@ -171,7 +191,7 @@ export default function CreateMarketPage() {
             systemProgram: SystemProgram.programId,
             marketAccount: eventAccount,
             userMarketShare: userStateAddress,
-            tokenMint: randomVar,
+            tokenMint: usdcPublicKey,
             vaultUsdc: vaultAddress,
             tokenAta: token_ata,
             adminAccount: adminAddress,

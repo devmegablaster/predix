@@ -11,6 +11,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<MarketsPage />} />
+      <Route path="/markets" element={<MarketsPage />} />
       <Route path="/event/:id" element={<EventPage />} />
       <Route path="/leaderboard" element={<LeaderboardPage />} />
       <Route path="/settings" element={<SettingsPage />} />

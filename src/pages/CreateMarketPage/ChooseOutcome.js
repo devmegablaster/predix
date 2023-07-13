@@ -10,12 +10,21 @@ export default function ChooseOutcome({
   mode,
   setMode,
 }) {
-  const handleOutcomeChange = (index, value) => {
-    const updatedOutcomes = [...inputData.outcomesLower];
-    updatedOutcomes[index] = value;
+  const handleOutcomeLowerChange = (index, value) => {
+    const updatedOutcomesLower = [...inputData.outcomesLower];
+    updatedOutcomesLower[index] = value;
     setInputData((prevData) => ({
       ...prevData,
-      outcomesLower: updatedOutcomes,
+      outcomesLower: updatedOutcomesLower,
+    }));
+  };
+
+  const handleOutcomeUpperChange = (index, value) => {
+    const updatedOutcomesUpper = [...inputData.outcomesUpper];
+    updatedOutcomesUpper[index] = value;
+    setInputData((prevData) => ({
+      ...prevData,
+      outcomesUpper: updatedOutcomesUpper,
     }));
   };
 
@@ -32,18 +41,44 @@ export default function ChooseOutcome({
       // Minimum of 2 default outcomes should be present
       return;
     }
-    const updatedOutcomes = [...inputData.outcomesLower];
-    updatedOutcomes.splice(index, 1);
+    const updatedOutcomesLower = [...inputData.outcomesLower];
+    updatedOutcomesLower.splice(index, 1);
+    const updatedOutcomesUpper = [...inputData.outcomesUpper];
+    updatedOutcomesUpper.splice(index, 1);
     setInputData((prevData) => ({
       ...prevData,
-      outcomesLower: updatedOutcomes,
+      outcomesLower: updatedOutcomesLower,
+      outcomesUpper: updatedOutcomesUpper,
     }));
+  };
+
+  const clearOutcomeFields = () => {
+    setInputData((prevData) => ({
+      ...prevData,
+      outcomesLower: ["Yes", "No"],
+      outcomesUpper: ["Yes", "No"],
+    }));
+  };
+
+  const handleModeChange = (newMode) => {
+    if (newMode === "single") {
+      clearOutcomeFields();
+    } else if (newMode === "range") {
+      setInputData((prevData) => ({
+        ...prevData,
+        outcomesLower: ["", ""],
+        outcomesUpper: ["", ""],
+      }));
+    }
+    setMode(newMode);
   };
 
   return (
     <section className="chooseoutcome">
-      <ToggleOutcome mode={mode} setMode={setMode} />
-      <section className="chooseoutcome_title">Outcome</section>
+      <ToggleOutcome mode={mode} setMode={handleModeChange} />
+      <section className="chooseoutcome_title">
+        {mode === "single" ? "Single Outcome" : "Enter the Ranges"}
+      </section>
       {inputData.outcomesLower.map((outcome, id) => {
         return (
           <div className="chooseoutcome_outcome" key={id}>
@@ -59,7 +94,8 @@ export default function ChooseOutcome({
                 }}
                 value={outcome}
                 className="chooseoutcome_outcome_left_input"
-                onChange={(e) => handleOutcomeChange(id, e.target.value)}
+                type={mode === "range" ? "number" : "string"}
+                onChange={(e) => handleOutcomeLowerChange(id, e.target.value)}
               />
 
               {mode === "range" && (
@@ -73,8 +109,9 @@ export default function ChooseOutcome({
                         : `url(${yellowicon})`,
                   }}
                   className="chooseoutcome_outcome_left_input"
-                  value={outcome}
-                  onChange={(e) => handleOutcomeChange(id, e.target.value)}
+                  type="number"
+                  value={inputData.outcomesUpper[id]}
+                  onChange={(e) => handleOutcomeUpperChange(id, e.target.value)}
                 />
               )}
             </div>

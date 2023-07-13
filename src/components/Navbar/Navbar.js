@@ -29,10 +29,10 @@ export default function Navbar() {
         </div>
       </div>
       <div className="navbar_navigationcontainer">
-        <div className="navbar_navigationcontainer_nav">
+        <Link to="/markets" className="navbar_navigationcontainer_nav">
           <img src={Markets} alt="markets" />
           <div>Markets</div>
-        </div>
+        </Link>
         <Link to="/leaderboard" className="navbar_navigationcontainer_nav">
           <img src={Leaderboard} alt="leaderboard" />
           <div>Leaderboard</div>
