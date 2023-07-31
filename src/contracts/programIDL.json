@@ -165,7 +165,7 @@
         },
         {
           "name": "resolver",
-          "type": "string"
+          "type": "u8"
         },
         {
           "name": "resolutionSource",
@@ -178,13 +178,19 @@
         {
           "name": "expectedLowerValue",
           "type": {
-            "array": ["f64", 10]
+            "array": [
+              "f64",
+              10
+            ]
           }
         },
         {
           "name": "expectedUpperValue",
           "type": {
-            "array": ["f64", 10]
+            "array": [
+              "f64",
+              10
+            ]
           }
         },
         {
@@ -194,6 +200,10 @@
         {
           "name": "totalOutcomes",
           "type": "u8"
+        },
+        {
+          "name": "liquidityFeesPercentage",
+          "type": "f64"
         }
       ]
     },
@@ -301,12 +311,55 @@
           "isSigner": true
         },
         {
+          "name": "tokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "marketAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userMarketShare",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultUsdc",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "marketId",
+          "type": "string"
+        },
+        {
+          "name": "vaultBump",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
     },
     {
       "name": "removeLiquidity",
@@ -317,12 +370,55 @@
           "isSigner": true
         },
         {
+          "name": "tokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "marketAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userMarketShare",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultUsdc",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "marketId",
+          "type": "string"
+        },
+        {
+          "name": "vaultBump",
+          "type": "u8"
+        },
+        {
+          "name": "liquidityShares",
+          "type": "u64"
+        }
+      ]
     },
     {
       "name": "buyOutcomeShare",
@@ -333,12 +429,59 @@
           "isSigner": true
         },
         {
+          "name": "tokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "marketAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userMarketShare",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultUsdc",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "marketId",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "outcomeShareIndex",
+          "type": "u8"
+        },
+        {
+          "name": "vaultBump",
+          "type": "u8"
+        }
+      ]
     },
     {
       "name": "sellOutcomeShare",
@@ -349,12 +492,126 @@
           "isSigner": true
         },
         {
+          "name": "tokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "marketAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userMarketShare",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultUsdc",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "marketId",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "outcomeShareIndex",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "closeMarketWithAdmin",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "adminAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "marketAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "marketId",
+          "type": "string"
+        },
+        {
+          "name": "winningOutcomeIndex",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "closeMarketWithPyth",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "adminAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "marketAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "priceAccount",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "marketId",
+          "type": "string"
+        }
+      ]
     },
     {
       "name": "claimWinning",
@@ -365,12 +622,51 @@
           "isSigner": true
         },
         {
+          "name": "tokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "marketAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userMarketShare",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultUsdc",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "marketId",
+          "type": "string"
+        },
+        {
+          "name": "vaultBump",
+          "type": "u8"
+        }
+      ]
     },
     {
       "name": "claimLiquidity",
@@ -381,12 +677,51 @@
           "isSigner": true
         },
         {
+          "name": "tokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "marketAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userMarketShare",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultUsdc",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "marketId",
+          "type": "string"
+        },
+        {
+          "name": "vaultBump",
+          "type": "u8"
+        }
+      ]
     },
     {
       "name": "claimLiquidityFees",
@@ -397,12 +732,51 @@
           "isSigner": true
         },
         {
+          "name": "tokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "marketAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userMarketShare",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultUsdc",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "marketId",
+          "type": "string"
+        },
+        {
+          "name": "vaultBump",
+          "type": "u8"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -489,9 +863,7 @@
           },
           {
             "name": "state",
-            "type": {
-              "defined": "MarketState"
-            }
+            "type": "u8"
           },
           {
             "name": "createdAt",
@@ -506,14 +878,20 @@
             "type": "f64"
           },
           {
+            "name": "liquidityFeesPercentage",
+            "type": "f64"
+          },
+          {
+            "name": "totalFeesPercentage",
+            "type": "f64"
+          },
+          {
             "name": "resolutionSource",
             "type": "string"
           },
           {
             "name": "resolver",
-            "type": {
-              "defined": "EventType"
-            }
+            "type": "u8"
           },
           {
             "name": "liquidity",
@@ -534,29 +912,49 @@
           {
             "name": "availableOutcomeShares",
             "type": {
-              "array": ["u64", 10]
+              "array": [
+                "u64",
+                10
+              ]
             }
           },
           {
             "name": "totalOutcomeShares",
             "type": {
-              "array": ["u64", 10]
+              "array": [
+                "u64",
+                10
+              ]
             }
+          },
+          {
+            "name": "totalFeeAmount",
+            "type": "u64"
           },
           {
             "name": "totalOutcomes",
             "type": "u8"
           },
           {
+            "name": "finalOutcome",
+            "type": "u8"
+          },
+          {
             "name": "expectedValueLowerBound",
             "type": {
-              "array": ["f64", 10]
+              "array": [
+                "f64",
+                10
+              ]
             }
           },
           {
             "name": "expectedValueUpperBound",
             "type": {
-              "array": ["f64", 10]
+              "array": [
+                "f64",
+                10
+              ]
             }
           },
           {
@@ -586,13 +984,19 @@
           {
             "name": "shares",
             "type": {
-              "array": ["i32", 10]
+              "array": [
+                "u64",
+                10
+              ]
             }
           },
           {
             "name": "sharesClaimed",
             "type": {
-              "array": ["i32", 10]
+              "array": [
+                "u64",
+                10
+              ]
             }
           },
           {
@@ -611,78 +1015,6 @@
       }
     }
   ],
-  "types": [
-    {
-      "name": "EventType",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Admin"
-          },
-          {
-            "name": "Pyth"
-          },
-          {
-            "name": "SwitchBoard"
-          }
-        ]
-      }
-    },
-    {
-      "name": "Outcome",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Yes"
-          },
-          {
-            "name": "No"
-          }
-        ]
-      }
-    },
-    {
-      "name": "MarketState",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Open"
-          },
-          {
-            "name": "Resolved",
-            "fields": [
-              {
-                "name": "outcome",
-                "type": {
-                  "defined": "Outcome"
-                }
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "name": "Operator",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "GreaterThan"
-          },
-          {
-            "name": "LessThan"
-          },
-          {
-            "name": "EqualTo"
-          }
-        ]
-      }
-    }
-  ],
   "errors": [
     {
       "code": 6000,
@@ -691,6 +1023,6 @@
     }
   ],
   "metadata": {
-    "address": "4jf7uEUAqsnhiyYkZmzez7YTgyxak627UBWDrbpcFSAU"
+    "address": "9kJt4LPtpxU89UzLo3FxaGbd49Cgvkn5Y2rAhvK1ZJc5"
   }
 }

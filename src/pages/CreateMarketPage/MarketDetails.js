@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./CreateMarketPage.scss";
 import ImageDropzone from "./ImageDropzone";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { DateTime } from "luxon";
+import Api from "../../utils/api";
 
+export default function MarketDetails({ inputData, setInputData }) {
+    const api = new Api();
 
-export default function MarketDetails({inputData, setInputData}) {
-      const minExpDate = new Date();
+  const [categories, setCategories] = useState([{ id: 0, name: "All" }]);
+
+  const minExpDate = new Date();
 
   const [eventImage, setEventImage] = useState(null);
 
@@ -31,20 +35,38 @@ export default function MarketDetails({inputData, setInputData}) {
     }));
   };
   const handleCategoryChange = (e) => {
+    const category = categories.find(
+      (cat) => String(cat.name) === e.target.value
+    );
     setInputData((prevData) => ({
       ...prevData,
       category: e.target.value,
+      categoryId: category.id
     }));
   };
-    const handleResolutionTypeChange = (e) => {
-      setInputData((prevData) => ({
-        ...prevData,
-        subcategory: e.target.value,
-      }));
-    };
+  const handleResolutionTypeChange = (e) => {
+    setInputData((prevData) => ({
+      ...prevData,
+      resolutionType: e.target.value,
+    }));
+  };
   const resolutionOptions = ["Pyth", "Admin", "Switchboard"];
 
   const categoryOptions = ["Crypto", "Entertainment", "NFT", "Others"];
+    useEffect(() => {
+      fetchData();
+    }, []);
+    const fetchData = async () => {
+      try {
+        const data = await api.fetchCategories();
+        if (data.success)
+          setCategories([...data.data?.categoryInfo]);
+        console.log(data);
+  
+      } catch (error) {
+        console.log("some error occured");
+      }
+    };
 
   return (
     <section className="marketdetails">
@@ -94,9 +116,9 @@ export default function MarketDetails({inputData, setInputData}) {
             onChange={handleCategoryChange}
           >
             <option value="">Select a category</option>
-            {categoryOptions.map((option) => (
-              <option value={option} key={option}>
-                {option}
+            {categories.length> 0 && categories.map((option) => (
+              <option value={option.name} key={option.id}>
+                {option.name}
               </option>
             ))}
           </select>

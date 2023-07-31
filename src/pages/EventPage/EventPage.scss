@@ -33,7 +33,7 @@
     &_outlinkscontainer {
       @apply flex gap-4 w-fit h-fit ml-4;
       &_outlink {
-        @apply p-2 rounded-md;
+        @apply p-2 rounded-md cursor-pointer;
         background: #1d1d1d;
         img {
           @apply w-6;

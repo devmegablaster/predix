@@ -10,139 +10,146 @@ import EventImage from "../../assets/event_image.svg";
 import TagPurple from "../../assets/tag_purple.svg";
 import "./MarketsContainer.scss";
 import { Link } from "react-router-dom";
+import Api from "../../utils/api";
+
+const tabsData = [
+  {
+    label: "All",
+  },
+  {
+    label: "Crypto",
+  },
+  {
+    label: "Entertainment",
+  },
+  {
+    label: "NFT",
+  },
+  {
+    label: "Stocks",
+  },
+  {
+    label: "Politics",
+  },
+  {
+    label: "Sports",
+  },
+  {
+    label: "Economics",
+  },
+  {
+    label: "Science and Technology",
+  },
+];
+const filters = ["New", "Trending", "Staff Picks", "Ending Soon"];
+
+const cardsData = [
+  {
+    type: "crypto",
+    name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
+    yesPrice: "1.81",
+    noPrice: "2.19",
+    volume: "49.2K",
+    liquidity: "19.0K",
+    date: "May 31, 2023",
+    icon: EventImage,
+  },
+  {
+    type: "crypto",
+    name: "Will DeGods NFT floor price be at or above 500 scdčol on March 31st?",
+    yesPrice: "1.81",
+    noPrice: "2.19",
+    volume: "49.2K",
+    liquidity: "19.0K",
+    date: "May 31, 2023",
+    icon: EventImage,
+  },
+  {
+    type: "entertainment",
+    name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
+    yesPrice: "1.81",
+    noPrice: "2.19",
+    volume: "49.2K",
+    liquidity: "19.0K",
+    date: "May 31, 2023",
+    icon: EventImage,
+  },
+  // {
+  //   type: "entertainment",
+  //   name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
+  //   yesPrice: "1.81",
+  //   noPrice: "2.19",
+  //   volume: "49.2K",
+  //   liquidity: "19.0K",
+  //   date: "May 31, 2023",
+  //   icon: EventImage,
+  // },
+  // {
+  //   type: "stocks",
+  //   name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
+  //   yesPrice: "1.81",
+  //   noPrice: "2.19",
+  //   volume: "49.2K",
+  //   liquidity: "19.0K",
+  //   date: "May 31, 2023",
+  //   icon: EventImage,
+  // },
+  // {
+  //   type: "politics",
+  //   name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
+  //   yesPrice: "1.81",
+  //   noPrice: "2.19",
+  //   volume: "49.2K",
+  //   liquidity: "19.0K",
+  //   date: "May 31, 2023",
+  //   icon: EventImage,
+  // },
+  // {
+  //   type: "sports",
+  //   name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
+  //   yesPrice: "1.81",
+  //   noPrice: "2.19",
+  //   volume: "49.2K",
+  //   liquidity: "19.0K",
+  //   date: "May 31, 2023",
+  //   icon: EventImage,
+  // },
+  // {
+  //   type: "economics",
+  //   name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
+  //   yesPrice: "1.81",
+  //   noPrice: "2.19",
+  //   volume: "49.2K",
+  //   liquidity: "19.0K",
+  //   date: "May 31, 2023",
+  //   icon: EventImage,
+  // },
+];
 
 export default function MarketsContainer() {
-  const tabsData = [
-    {
-      label: "All",
-    },
-    {
-      label: "Crypto",
-    },
-    {
-      label: "Entertainment",
-    },
-    {
-      label: "NFT",
-    },
-    {
-      label: "Stocks",
-    },
-    {
-      label: "Politics",
-    },
-    {
-      label: "Sports",
-    },
-    {
-      label: "Economics",
-    },
-    {
-      label: "Science and Technology",
-    },
-  ];
-  const filters = ["New", "Trending", "Staff Picks", "Ending Soon"];
+  const api = new Api();
 
-  const cardsData = [
-    {
-      type: "crypto",
-      name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
-      yesPrice: "1.81",
-      noPrice: "2.19",
-      volume: "49.2K",
-      liquidity: "19.0K",
-      date: "May 31, 2023",
-      icon: EventImage,
-    },
-    {
-      type: "crypto",
-      name: "Will DeGods NFT floor price be at or above 500 scdčol on March 31st?",
-      yesPrice: "1.81",
-      noPrice: "2.19",
-      volume: "49.2K",
-      liquidity: "19.0K",
-      date: "May 31, 2023",
-      icon: EventImage,
-    },
-    {
-      type: "crypto",
-      name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
-      yesPrice: "1.81",
-      noPrice: "2.19",
-      volume: "49.2K",
-      liquidity: "19.0K",
-      date: "May 31, 2023",
-      icon: EventImage,
-    },
-    {
-      type: "entertainment",
-      name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
-      yesPrice: "1.81",
-      noPrice: "2.19",
-      volume: "49.2K",
-      liquidity: "19.0K",
-      date: "May 31, 2023",
-      icon: EventImage,
-    },
-    {
-      type: "stocks",
-      name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
-      yesPrice: "1.81",
-      noPrice: "2.19",
-      volume: "49.2K",
-      liquidity: "19.0K",
-      date: "May 31, 2023",
-      icon: EventImage,
-    },
-    {
-      type: "politics",
-      name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
-      yesPrice: "1.81",
-      noPrice: "2.19",
-      volume: "49.2K",
-      liquidity: "19.0K",
-      date: "May 31, 2023",
-      icon: EventImage,
-    },
-    {
-      type: "sports",
-      name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
-      yesPrice: "1.81",
-      noPrice: "2.19",
-      volume: "49.2K",
-      liquidity: "19.0K",
-      date: "May 31, 2023",
-      icon: EventImage,
-    },
-    {
-      type: "economics",
-      name: "Will DeGods NFT floor price be at or above 500 sol on March 31st?",
-      yesPrice: "1.81",
-      noPrice: "2.19",
-      volume: "49.2K",
-      liquidity: "19.0K",
-      date: "May 31, 2023",
-      icon: EventImage,
-    },
-  ];
+  const [categories, setCategories] = useState([{ id: 0, name: "All" }]);
+  const [marketsData, setMarketsData] = useState([]);
+
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0);
   const [tabUnderlineLeft, setTabUnderlineLeft] = useState(0);
   const [selectedTab, setSelectedTab] = useState("All");
 
   const tabsRef = useRef([]);
-  const [filteredCards, setFilteredCards] = useState(cardsData);
+  const [filteredCards, setFilteredCards] = useState(marketsData);
 
   useEffect(() => {
     if (selectedTab === "All") {
-      setFilteredCards(cardsData);
+      setFilteredCards(marketsData);
     } else {
-      const filtered = cardsData.filter(
-        (card) => card.type.toLowerCase() === selectedTab.toLowerCase()
+      const filtered = marketsData.filter(
+        (card) => card?.categoryName.toLowerCase() === selectedTab.toLowerCase()
       );
       setFilteredCards(filtered);
     }
-  }, [selectedTab]);
+  }, [selectedTab, marketsData]);
 
   useEffect(() => {
     function setTabPosition() {
@@ -156,11 +163,42 @@ export default function MarketsContainer() {
 
     return () => window.removeEventListener("resize", setTabPosition);
   }, [activeTabIndex]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const fetchData = async () => {
+    console.log("hello");
+    try {
+      const data = await api.fetchCategories();
+      console.log("data",data);
+      if (data.success)
+        setCategories([{ id: 0, name: "All" }, ...data.data?.categoryInfo]);
+      console.log(data);
+      const activeMarketData = await api.fetchActiveMarkets();
+      console.log(activeMarketData);
+      if (activeMarketData.success) {
+        const modifiedMarketData = activeMarketData.data?.marketrestructuredResponse;
+        // const modifiedMarketData = activeMarketData.data?.marketDetailsInfo.map(
+        //   (market) => {
+        //     console.log("m",market);
+        //     const category = data.data?.categoryInfo.find(
+        //       (cat) => String(cat.id) === market.categoryId
+        //     );
+        //     return { ...market, categoryName: category ? category.name : null };
+        //   }
+        // );
+        setMarketsData(modifiedMarketData);
+      }
+    } catch (error) {
+      console.log("some error occured");
+    }
+  };
   return (
     <>
       <div className="markets_main_header">
         <div className=" markets_main_header_tabs">
-          {tabsData.map((tab, idx) => {
+          {categories.map((tab, idx) => {
             const isActive = idx === activeTabIndex;
             return (
               <>
@@ -171,7 +209,7 @@ export default function MarketsContainer() {
                     isActive ? "active-tab" : ""
                   }`}
                   onClick={() => {
-                    setSelectedTab(tab.label);
+                    setSelectedTab(tab.name);
                     setActiveTabIndex(idx);
                   }}
                   style={{ whiteSpace: "nowrap" }}
@@ -181,7 +219,7 @@ export default function MarketsContainer() {
                     className="mr-2 float-left"
                     alt="tab"
                   />
-                  {tab.label}
+                  {tab.name}
                 </button>
                 <span
                   className="absolute bottom-0 block h-0.5 transition-all duration-300"
@@ -208,10 +246,10 @@ export default function MarketsContainer() {
           })}
         </div>
         <div className="markets_main_cardscontainer_cards">
-          {filteredCards.map((card, id) => {
+          {marketsData.map((card, id) => {
             return (
               <Link
-                to="/event/485839"
+                to={`/event/${card?.marketDetails?.id}`}
                 className="markets_main_cardscontainer_card"
               >
                 <div className="markets_main_cardscontainer_card_content">
@@ -220,7 +258,7 @@ export default function MarketsContainer() {
                       <div className="markets_main_cardscontainer_card_content_top_left_tagcontainer">
                         <div className="markets_main_cardscontainer_card_content_top_left_tagcontainer_label">
                           <img src={TagPurple} alt="tag" />
-                          {card.type}
+                          {card?.category[0]?.name}
                         </div>
                         <img
                           className="w-5"
@@ -229,33 +267,33 @@ export default function MarketsContainer() {
                         />
                       </div>
                       <div className="markets_main_cardscontainer_card_content_top_left_namecontainer">
-                        {card.name}
+                        {card?.marketDetails?.description}
                       </div>
                     </div>
                     <div className="markets_main_cardscontainer_card_content_top_right">
                       <img
                         className="w-full"
-                        src={card.icon}
+                        src={EventImage}
                         alt="eventImage"
                       />
                     </div>
                   </div>
                   <div className="markets_main_cardscontainer_card_content_yesnocontainer">
                     <div className="markets_main_cardscontainer_card_content_yesnocontainer_yescontainer">
-                      {card.yesPrice}
+                      {card?.yesPrice}
                     </div>
                     <div className="markets_main_cardscontainer_card_content_yesnocontainer_nocontainer">
-                      {card.noPrice}
+                      {card?.noPrice}
                     </div>
                   </div>
                 </div>
                 <div className="markets_main_cardscontainer_card_footer">
                   <div className="markets_main_cardscontainer_card_footer_left">
                     <div className="markets_main_cardscontainer_card_footer_left_detail">
-                      <img src={TabIcon} alt="volume" /> {card.volume}
+                      <img src={TabIcon} alt="volume" /> {card?.volume}
                     </div>
                     <div className="markets_main_cardscontainer_card_footer_left_detail">
-                      <img src={LiquidityIcon} alt="volume" /> {card.liquidity}
+                      <img src={LiquidityIcon} alt="volume" /> {card?.liquidity}
                     </div>
                   </div>
                   <div className="markets_main_cardscontainer_card_footer_right"></div>

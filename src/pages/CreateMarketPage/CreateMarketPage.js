@@ -5,6 +5,8 @@ import MarketDetails from "./MarketDetails";
 import ChooseOutcome from "./ChooseOutcome";
 import FundingInformation from "./FundingInformation";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
+import axios from "axios";
+
 import {
   useConnection,
   useWallet,
@@ -25,11 +27,13 @@ import {
 } from "@solana/spl-token";
 import { v4 as uuidv4 } from "uuid";
 import { getAccountAddresses } from "../../utils/createMarketFunctions.js";
+import Api from "../../utils/api";
 
 export default function CreateMarketPage() {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
   const [mode, setMode] = useState("single");
+  const api = new Api();
 
   const { publicKey, sendTransaction } = useWallet();
   const ProgramID = new PublicKey(ProgramIDL.metadata.address);
@@ -48,11 +52,14 @@ export default function CreateMarketPage() {
     description: "Who is known to be a worse women in the music industry?",
     resolutionSource: "https://predixmarkets.com",
     category: "",
+    categoryId: "",
     resolutionType: "",
     closeDateTime: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-    outcomesLower: ["Yes", "No"],
-    outcomesUpper: ["Yes", "No"],
+    outcomesNames: ["Yes", "No"],
+    outcomesLower: [0, 1],
+    outcomesUpper: [0, 1],
     imageFile: null,
+    imageIPFSHash: "",
     platformFees: 0,
     liquidityFees: 0,
     liquidity: 0,
@@ -132,98 +139,224 @@ export default function CreateMarketPage() {
       eventCloseTime,
     };
   };
+
+  const getApiConfig = async () => {
+    const config = {
+      headers: {
+        "Content-Type": `multipart/form-data`,
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIxNWUxM2FjYy1jODJjLTQ0NTQtOWVlNC1iMmUxMjNiMTkxYTEiLCJlbWFpbCI6InJpc2hhYmhrZXNoYW5AZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siaWQiOiJOWUMxIiwiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjF9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZSwic3RhdHVzIjoiQUNUSVZFIn0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6IjY0ZjhhNmVlNjFiNDE0MjE0NWQxIiwic2NvcGVkS2V5U2VjcmV0IjoiM2VkYzU2MWY3MGRmYWI1YTcxY2UwMDAzYmU0YzYzZDY1ZDRmNGVmNGZjMDRmZjdmMDUwMTQ4OWUxNWJhMzhlMSIsImlhdCI6MTY5MDQ1NDUyMH0.rdkxgYaI0_KP-9UQAPGac7-XH-OXn1YMs_1nTkfV0do`,
+      },
+    };
+    return config;
+  };
+  async function retrieveFromPinata(cid) {
+    try {
+      const response = await axios.get(
+        `https://api.pinata.cloud/pinning/cat/${cid}`,
+        await getApiConfig()
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error retrieving file from Pinata:", error);
+      return null;
+    }
+  }
+
+  const handleUpload = async (selectedFiles, customName, wrapWithDirectory) => {
+    try {
+      const data = new FormData();
+      console.log(selectedFiles);
+      if (customName && customName !== "") {
+        const metadata = JSON.stringify({
+          name: customName,
+        });
+        data.append("pinataMetadata", metadata);
+        console.log("pinataMetadata", metadata);
+      }
+
+      if (selectedFiles.length > 0) {
+        selectedFiles.forEach((file) => {
+          data.append(`file`, file);
+        });
+      } else {
+        console.log("hut");
+        data.append("file", selectedFiles);
+      }
+      const pinataOptions = JSON.stringify({
+        wrapWithDirectory: false,
+      });
+      data.append("pinataOptions", pinataOptions);
+      const res = await axios.post(
+        `https://api.pinata.cloud/pinning/pinFileToIPFS`,
+        data,
+        await getApiConfig()
+      );
+      return res.data;
+    } catch (error) {
+      console.log(error);
+      //  Handle error
+    }
+  };
   const handleNext = async () => {
     if (isLastStep) {
       if (!publicKey) throw new WalletNotConnectedError();
-
-      const uuid = "5";
       const { lowerBound, upperBound, numOutcomes, eventCloseTime } =
         getMarketDetails();
-      const {
-        eventAccount,
-        eventBump,
-        adminAddress,
-        adminBump,
-        vaultAddress,
-        vaultBump,
-        userStateAddress,
-        userStateBump,
-        usdcAddress,
-        usdcPublicKey,
-      } = getAccountAddresses(uuid, publicKey, ProgramID);
-
-      const program = new Program(ProgramIDL, ProgramID, provider);
-      const token_ata = await getAssociatedTokenAddress(
-        usdcPublicKey,
-        publicKey,
-        false,
-        TOKEN_PROGRAM_ID,
-        ASSOCIATED_TOKEN_PROGRAM_ID
-      );
-      console.log("vpda", eventBump);
-      console.log("data_acccount", eventAccount);
-      const usdcKey = web3.Keypair.generate();
-
-      const usdc_ata = await getAssociatedTokenAddress(
-        usdcKey.publicKey,
-        provider.wallet.publicKey,
-        false,
-        TOKEN_PROGRAM_ID,
-        ASSOCIATED_TOKEN_PROGRAM_ID
-      );
-
-      try {
-        // const ix = await program.methods
-        //   .createMarket(
-        //     uuid,
-        //     eventCloseTime,
-        //     "Admin",
-        //     "",
-        //     "=",
-        //     lowerBound,
-        //     upperBound,
-        //     0.0,
-        //     numOutcomes
-        //   )
-        //   .accounts({
-        //     authority: publicKey,
-        //     adminAccount: adminAddress,
-        //     systemProgram: SystemProgram.programId,
-        //     createMarket: eventAccount,
-        //     tokenMint: usdcPublicKey,
-        //     vaultUsdc: vaultAddress,
-        //   })
-        //   .rpc();
-
-        const ix2 = await program.methods
-          .adminAddLiquidity(uuid, vaultBump, new BN(1000000000))
-          .accounts({
-            authority: publicKey,
-            systemProgram: SystemProgram.programId,
-            marketAccount: eventAccount,
-            userMarketShare: userStateAddress,
-            tokenMint: usdcPublicKey,
-            vaultUsdc: vaultAddress,
-            tokenAta: token_ata,
-            adminAccount: adminAddress,
-          })
-          .rpc();
-        console.log("initial liquidity", ix2);
-      } catch (err) {
-        console.log(err);
+      let res = { IpfsHash: "QmYz44TZqHXeaQ4jKVEECcRMNC8JCD4hEMwtahXqAjRkJX" };
+      if (inputData.imageFile) {
+        res = await handleUpload(inputData.imageFile, inputData.name, true);
+        const eventImageURL = "https://ipfs.io/ipfs/" + res.IpfsHash;
+        console.log(res);
+        console.log(eventImageURL);
       }
-      // const tx = new Transaction().add(ix2);
-      // const tx2 = await provider.sendAndConfirm(tx);
-      // console.log("Your transaction signature", ix2);
-      const marketData = await program.account.marketEvent.fetch(eventAccount);
-      console.log("market data", marketData);
-      console.log("event bump", eventBump);
+      //       {
+      //     "marketName" : "test1",
+      //     "address" : "testAddress",
+      //     "description": "testing creation of market",
+      //     "categoryId" : "1",
+      //     "resolutionSourceId" : "1",
+      //     "createdBy" : "1",
+      //     "resolutionSourceURL" : "https://abc.com",
+      //     "closeTime" : "2023-07-22T03:34:40.000Z",
+      //     "image" : "image"
+      // }
+      // [
+      //   {
+      //     name: "Yes",
+      //     lowerBound: 1,
+      //     upperBound: 1,
+      //     marketDetailsId: "1",
+      //   },
+      //   {
+      //     name: "No",
+      //     lowerBound: 0,
+      //     upperBound: 0,
+      //     marketDetailsId: "1",
+      //   },
+      // ];
 
-      console.log("event account", eventAccount);
-      console.log("Create Event");
+      const marketData = {
+        marketName: inputData.name,
+        address: publicKey.toBase58(),
+        description: inputData.description,
+        categoryId: String(inputData.categoryId),
+        resolutionSourceId: "1",
+        createdBy: publicKey.toBase58(),
+        resolutionSourceURL: inputData.resolutionSource,
+        closeTime: "2023-09-22T03:34:40.000Z",
+        image: res.IpfsHash,
+      };
+      console.log(marketData);
+
+      const response = await createMarketBackend(marketData);
+      let uuid = null;
+      if (response.success) uuid = response.data.marketDetailsInfo.insertId;
+      if (uuid) {
+        const outcomeArray = inputData.outcomesNames.map((outcome, index) => ({
+          name: outcome,
+          lowerBound: inputData.outcomesLower[index],
+          upperBound: inputData.outcomesUpper[index],
+          marketDetailsId: uuid.toString(),
+        }));
+        const outcomeReponse = await api.addOutcomes(outcomeArray);
+        console.log(outcomeReponse);
+        if (outcomeReponse.success) {
+          await createMarketOnChain(uuid);
+        }
+      }
     } else {
       setActiveTabIndex(activeTabIndex + 1);
     }
+  };
+
+  const createMarketBackend = async (data) => {
+    const response = await api.createMarket(data);
+    console.log(response);
+    return response;
+  };
+  const createMarketOnChain = async (uuid) => {
+    const { lowerBound, upperBound, numOutcomes, eventCloseTime } =
+      getMarketDetails();
+    const {
+      eventAccount,
+      eventBump,
+      adminAddress,
+      adminBump,
+      vaultAddress,
+      vaultBump,
+      userStateAddress,
+      userStateBump,
+      usdcAddress,
+      usdcPublicKey,
+    } = getAccountAddresses(uuid, publicKey, ProgramID);
+
+    const program = new Program(ProgramIDL, ProgramID, provider);
+    const token_ata = await getAssociatedTokenAddress(
+      usdcPublicKey,
+      publicKey,
+      false,
+      TOKEN_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
+    );
+    console.log("vpda", eventBump);
+    console.log("data_acccount", eventAccount);
+
+    try {
+      const ix = await program.methods
+        .createMarket(
+          uuid,
+          eventCloseTime,
+          1,
+          "",
+          "=",
+          lowerBound,
+          upperBound,
+          0.0,
+          numOutcomes,
+          1.0
+        )
+        .accounts({
+          authority: publicKey,
+          adminAccount: adminAddress,
+          systemProgram: SystemProgram.programId,
+          createMarket: eventAccount,
+          tokenMint: usdcPublicKey,
+          vaultUsdc: vaultAddress,
+        })
+        .instruction();
+
+      const ix2 = await program.methods
+        .adminAddLiquidity(uuid, vaultBump, new BN(1000000000))
+        .accounts({
+          authority: publicKey,
+          systemProgram: SystemProgram.programId,
+          marketAccount: eventAccount,
+          userMarketShare: userStateAddress,
+          tokenMint: usdcPublicKey,
+          vaultUsdc: vaultAddress,
+          tokenAta: token_ata,
+          adminAccount: adminAddress,
+        })
+        .instruction();
+      const tx = new Transaction().add(ix).add(ix2);
+      const tx2 = await provider.sendAndConfirm(tx);
+      console.log("Your transaction signature", tx2);
+      console.log("initial liquidity", ix2);
+    } catch (err) {
+      console.log(err);
+    }
+    try {
+      const marketData = await program.account.marketEvent.fetch(eventAccount);
+      console.log("market data", marketData);
+      if(marketData){
+        const activateMarket = await api.activateMarket(uuid);
+        console.log(activateMarket);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+    console.log("event account", eventAccount);
   };
   return (
     <article className="createmarket">

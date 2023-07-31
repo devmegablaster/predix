@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import "./EventsPage.scss";
-const ToggleAddRemove = ({ id, modeAR, setModeAR }) => {
+const ToggleBuySell = ({ id, modeBS, setModeBS }) => {
 
   const handleToggle = () => {
-    setModeAR(modeAR === "remove" ? "add" : "remove");
+    setModeBS(modeBS === "sell" ? "buy" : "sell");
   };
 
   return (
@@ -12,7 +12,7 @@ const ToggleAddRemove = ({ id, modeAR, setModeAR }) => {
         <div className="relative">
           <input
             type="checkbox"
-            checked={modeAR === "remove"}
+            checked={modeBS === "sell"}
             id={`${id}`}
             name={id}
             className="sr-only"
@@ -21,22 +21,22 @@ const ToggleAddRemove = ({ id, modeAR, setModeAR }) => {
           <div className="tar_c bg-gray-800 w-60 h-16">
             <p
               className={`tar_text ${
-                modeAR === "add" ? "text-white" : "text-gray"
+                modeBS === "buy" ? "text-white" : "text-gray"
               }`}
             >
-              Add
+              Buy
             </p>
             <p
               className={`tar_text ${
-                modeAR === "remove" ? "text-white" : "text-gray"
+                modeBS === "sell" ? "text-white" : "text-gray"
               }`}
             >
-              Remove
+              Sell
             </p>
           </div>
           <div
             className={`${
-              modeAR === "remove" ? "translate-x-full bg-green-500" : "bg-green-500"
+              modeBS === "sell" ? "translate-x-full bg-green-500" : "bg-green-500"
             } tar_h`}
           ></div>
         </div>
@@ -45,4 +45,4 @@ const ToggleAddRemove = ({ id, modeAR, setModeAR }) => {
   );
 };
 
-export default ToggleAddRemove;
+export default ToggleBuySell;

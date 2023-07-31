@@ -10,6 +10,14 @@ export default function ChooseOutcome({
   mode,
   setMode,
 }) {
+  const handleOutcomeNameChange = (index, value) => {
+    const updatedOutcomesNames = [...inputData.outcomesNames];
+    updatedOutcomesNames[index] = value;
+    setInputData((prevData) => ({
+      ...prevData,
+      outcomesNames: updatedOutcomesNames,
+    }));
+  };
   const handleOutcomeLowerChange = (index, value) => {
     const updatedOutcomesLower = [...inputData.outcomesLower];
     updatedOutcomesLower[index] = value;
@@ -31,6 +39,7 @@ export default function ChooseOutcome({
   const addOutcomeField = () => {
     setInputData((prevData) => ({
       ...prevData,
+      outcomesNames: [...prevData.outcomesNames, ""],
       outcomesLower: [...prevData.outcomesLower, ""],
       outcomesUpper: [...prevData.outcomesUpper, ""],
     }));
@@ -45,18 +54,21 @@ export default function ChooseOutcome({
     updatedOutcomesLower.splice(index, 1);
     const updatedOutcomesUpper = [...inputData.outcomesUpper];
     updatedOutcomesUpper.splice(index, 1);
+    const updatedOutcomesNames = [...inputData.outcomesNames];
+    updatedOutcomesNames.splice(index, 1);
     setInputData((prevData) => ({
       ...prevData,
       outcomesLower: updatedOutcomesLower,
       outcomesUpper: updatedOutcomesUpper,
+      outcomesNames: updatedOutcomesNames,
     }));
   };
 
   const clearOutcomeFields = () => {
     setInputData((prevData) => ({
       ...prevData,
-      outcomesLower: ["Yes", "No"],
-      outcomesUpper: ["Yes", "No"],
+      outcomesLower: [0, 1],
+      outcomesUpper: [0, 1],
     }));
   };
 
@@ -79,7 +91,26 @@ export default function ChooseOutcome({
       <section className="chooseoutcome_title">
         {mode === "single" ? "Single Outcome" : "Enter the Ranges"}
       </section>
-      {inputData.outcomesLower.map((outcome, id) => {
+      {
+        <div className="chooseoutcome_outcome">
+          <div className="chooseoutcome_outcome_left">
+            {mode === "range" && (
+              <>
+                <div style={{border: "none", opacity: "0.5"}} className="chooseoutcome_outcome_left_input">
+                  Outcome Name
+                </div>
+                <div style={{border: "none", opacity: "0.5"}} className="chooseoutcome_outcome_left_input">
+                  Lower Range
+                </div>
+                <div style={{border: "none", opacity: "0.5"}} className="chooseoutcome_outcome_left_input">
+                  Upper Range
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      }
+      {inputData.outcomesNames.map((outcome, id) => {
         return (
           <div className="chooseoutcome_outcome" key={id}>
             <div className="chooseoutcome_outcome_left">
@@ -95,24 +126,44 @@ export default function ChooseOutcome({
                 value={outcome}
                 className="chooseoutcome_outcome_left_input"
                 type={mode === "range" ? "number" : "string"}
-                onChange={(e) => handleOutcomeLowerChange(id, e.target.value)}
+                onChange={(e) => handleOutcomeNameChange(id, e.target.value)}
               />
 
               {mode === "range" && (
-                <input
-                  style={{
-                    backgroundImage:
-                      id === 0
-                        ? `url(${greenicon})`
-                        : id === 1
-                        ? `url(${redicon})`
-                        : `url(${yellowicon})`,
-                  }}
-                  className="chooseoutcome_outcome_left_input"
-                  type="number"
-                  value={inputData.outcomesUpper[id]}
-                  onChange={(e) => handleOutcomeUpperChange(id, e.target.value)}
-                />
+                <>
+                  <input
+                    style={{
+                      backgroundImage:
+                        id === 0
+                          ? `url(${greenicon})`
+                          : id === 1
+                          ? `url(${redicon})`
+                          : `url(${yellowicon})`,
+                    }}
+                    className="chooseoutcome_outcome_left_input"
+                    type="number"
+                    value={inputData.outcomesLower[id]}
+                    onChange={(e) =>
+                      handleOutcomeLowerChange(id, e.target.value)
+                    }
+                  />
+                  <input
+                    style={{
+                      backgroundImage:
+                        id === 0
+                          ? `url(${greenicon})`
+                          : id === 1
+                          ? `url(${redicon})`
+                          : `url(${yellowicon})`,
+                    }}
+                    className="chooseoutcome_outcome_left_input"
+                    type="number"
+                    value={inputData.outcomesUpper[id]}
+                    onChange={(e) =>
+                      handleOutcomeUpperChange(id, e.target.value)
+                    }
+                  />
+                </>
               )}
             </div>
             {id > 1 && (

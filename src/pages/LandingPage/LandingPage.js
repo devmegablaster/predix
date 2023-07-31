@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./LandingPage.scss";
 import Navbar from "../../components/Navbar/Navbar";
 import LandingBanner from "../../assets/LandingBanner.png";
@@ -12,8 +12,11 @@ import RedeemIcon from "../../assets/redeem.svg";
 import Predix from "../../assets/PredixLogo.svg";
 import MarketsContainer from "../../components/MarketsContainer/MarketsContainer";
 import { Link } from "react-router-dom";
+import Api from "../../utils/api";
 
 export default function LandingPage() {
+
+
   const getStartedCardsData = [
     {
       title: "1. Connect",
@@ -61,6 +64,8 @@ export default function LandingPage() {
     },
   ];
 
+
+
   return (
     <article className="landing">
       <Navbar />
@@ -75,7 +80,7 @@ export default function LandingPage() {
             <div className="landing_main_content_markets_title">
               Trending Markets
             </div>
-            <MarketsContainer />
+            <MarketsContainer/>
             <Link
               to="/markets"
               className="landing_main_content_markets_allbutton"

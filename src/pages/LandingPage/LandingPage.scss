@@ -9,12 +9,12 @@
     &_content {
       @apply flex flex-col w-full;
       &_markets {
-        @apply flex flex-col items-center py-16 px-32;
+        @apply flex flex-col w-full py-16 px-32;
         &_title {
-          @apply text-white text-5xl font-black pb-5;
+          @apply text-white text-5xl text-center font-black pb-5;
         }
         &_allbutton {
-          @apply mt-8 px-8 py-4 text-lg rounded-lg font-semibold;
+          @apply mt-8 px-8 py-4 text-lg rounded-lg w-fit mx-auto text-center font-semibold;
           color: #101012;
           background: var(--brand-purple, #d4d5f9);
         }
@@ -95,32 +95,33 @@
           color: rgba(255, 255, 255, 0.75);
         }
       }
-      &_footer{
-                @apply flex justify-between py-16 px-8 text-white;
-                &_left{
-                    &_logo{
-                        img{ @apply h-16;
-                        }
-                    }
-                }
-                &_middle{
-                    @apply flex flex-col;
-                    &_text{
-                        @apply font-medium text-lg pb-3;
-                    }
-                    &_subtext{
-                        @apply font-medium text-sm pb-4;
-                    }
-                }
-                &_right{
-                    @apply flex flex-col pr-6;
-                    &_text{
-                        @apply font-medium text-lg;
-                    }
-                    &_socials{
-                        @apply flex gap-2 mt-2;
-                    }
-                }
+      &_footer {
+        @apply flex justify-between py-16 px-8 text-white;
+        &_left {
+          &_logo {
+            img {
+              @apply h-16;
+            }
+          }
+        }
+        &_middle {
+          @apply flex flex-col;
+          &_text {
+            @apply font-medium text-lg pb-3;
+          }
+          &_subtext {
+            @apply font-medium text-sm pb-4;
+          }
+        }
+        &_right {
+          @apply flex flex-col pr-6;
+          &_text {
+            @apply font-medium text-lg;
+          }
+          &_socials {
+            @apply flex gap-2 mt-2;
+          }
+        }
       }
     }
   }

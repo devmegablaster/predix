@@ -12,7 +12,8 @@
   &_searchcontainer {
     @apply ml-8;
     &_input {
-      @apply rounded-lg pl-12 pr-4 py-3 w-96 outline-none text-white bg-inherit bg-no-repeat;
+      @apply rounded-lg pl-12 pr-4 py-3 w-96 outline-none text-white bg-inherit bg-no-repeat hidden lg:flex ;
+      // display: flex;
       border: 1.5px solid var(--border, #252525);
       background-image: url(../../assets/seach_icon.svg);
       background-position: 10px 50%;

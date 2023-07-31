@@ -47,7 +47,7 @@
           &_top {
             @apply p-3 flex gap-4;
             &_left {
-              @apply flex flex-col;
+              @apply flex flex-col w-9/12;
               &_tagcontainer {
                 @apply flex justify-between;
                 &_label {
@@ -64,7 +64,7 @@
               }
             }
             &_right{
-                @apply flex w-36;
+                @apply flex w-3/12;
             }
           }
           &_yesnocontainer {
