@@ -17,6 +17,7 @@ import {
   SystemProgram,
   PublicKey,
   Transaction,
+  LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
 import { Idl, Program, web3, BN, AnchorProvider } from "@project-serum/anchor";
 import ProgramIDL from "../../contracts/programIDL.json";
@@ -139,7 +140,10 @@ export default function CreateMarketPage() {
       eventCloseTime,
     };
   };
-
+  function amountToLamports(sol) {
+    const LAMPORTS_PER_SOL = new BN(1000000000);
+    return new BN(sol).mul(LAMPORTS_PER_SOL);
+  }
   const getApiConfig = async () => {
     const config = {
       headers: {
@@ -149,18 +153,6 @@ export default function CreateMarketPage() {
     };
     return config;
   };
-  async function retrieveFromPinata(cid) {
-    try {
-      const response = await axios.get(
-        `https://api.pinata.cloud/pinning/cat/${cid}`,
-        await getApiConfig()
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error retrieving file from Pinata:", error);
-      return null;
-    }
-  }
 
   const handleUpload = async (selectedFiles, customName, wrapWithDirectory) => {
     try {
@@ -209,61 +201,55 @@ export default function CreateMarketPage() {
         console.log(res);
         console.log(eventImageURL);
       }
-      //       {
-      //     "marketName" : "test1",
-      //     "address" : "testAddress",
-      //     "description": "testing creation of market",
-      //     "categoryId" : "1",
-      //     "resolutionSourceId" : "1",
-      //     "createdBy" : "1",
-      //     "resolutionSourceURL" : "https://abc.com",
-      //     "closeTime" : "2023-07-22T03:34:40.000Z",
-      //     "image" : "image"
-      // }
-      // [
-      //   {
-      //     name: "Yes",
-      //     lowerBound: 1,
-      //     upperBound: 1,
-      //     marketDetailsId: "1",
-      //   },
-      //   {
-      //     name: "No",
-      //     lowerBound: 0,
-      //     upperBound: 0,
-      //     marketDetailsId: "1",
-      //   },
-      // ];
 
+      const outcomeArray = inputData.outcomesNames.map((outcome, index) => ({
+        name: outcome,
+        lowerBound: inputData.outcomesLower[index],
+        upperBound: inputData.outcomesUpper[index],
+        marketDetailsId: "1",
+      }));
+      let uuidMarket = "46";
       const marketData = {
         marketName: inputData.name,
-        address: publicKey.toBase58(),
+        marketContractId: uuidMarket,
         description: inputData.description,
         categoryId: String(inputData.categoryId),
         resolutionSourceId: "1",
         createdBy: publicKey.toBase58(),
         resolutionSourceURL: inputData.resolutionSource,
-        closeTime: "2023-09-22T03:34:40.000Z",
+        closeTime: inputData.closeDateTime.toISOString(),
         image: res.IpfsHash,
+        outcomesList: outcomeArray,
       };
+
       console.log(marketData);
 
       const response = await createMarketBackend(marketData);
-      let uuid = null;
-      if (response.success) uuid = response.data.marketDetailsInfo.insertId;
-      if (uuid) {
-        const outcomeArray = inputData.outcomesNames.map((outcome, index) => ({
-          name: outcome,
-          lowerBound: inputData.outcomesLower[index],
-          upperBound: inputData.outcomesUpper[index],
-          marketDetailsId: uuid.toString(),
-        }));
-        const outcomeReponse = await api.addOutcomes(outcomeArray);
-        console.log(outcomeReponse);
-        if (outcomeReponse.success) {
-          await createMarketOnChain(uuid);
+      console.log(response);
+      if (response.success) {
+        const marketId = String(
+          response.data.marketrestructuredResponse.marketDetails.id
+        );
+        const liquidityData = {
+          walletAddress: publicKey.toBase58(),
+          amount: String(inputData.liquidity),
+          type: "Add",
+          marketDetailsId: marketId,
+        };
+        const res = await api.addLiquidity(liquidityData);
+        if (res.success) {
+          await createMarketOnChain(uuidMarket, marketId);
         }
       }
+
+      // let uuid = null;
+      // if (response.success) uuid = response.data.marketDetailsInfo.insertId;
+      // if (uuid) {
+      //   const outcomeReponse = await api.addOutcomes(outcomeArray);
+      //   console.log(outcomeReponse);
+      //   if (outcomeReponse.success) {
+      //   }
+      // }
     } else {
       setActiveTabIndex(activeTabIndex + 1);
     }
@@ -274,7 +260,7 @@ export default function CreateMarketPage() {
     console.log(response);
     return response;
   };
-  const createMarketOnChain = async (uuid) => {
+  const createMarketOnChain = async (uuid, marketId) => {
     const { lowerBound, upperBound, numOutcomes, eventCloseTime } =
       getMarketDetails();
     const {
@@ -288,6 +274,9 @@ export default function CreateMarketPage() {
       userStateBump,
       usdcAddress,
       usdcPublicKey,
+      userWalletAddress,
+      userVaultAddress,
+      userVaultBump,
     } = getAccountAddresses(uuid, publicKey, ProgramID);
 
     const program = new Program(ProgramIDL, ProgramID, provider);
@@ -302,6 +291,32 @@ export default function CreateMarketPage() {
     console.log("data_acccount", eventAccount);
 
     try {
+      // const id = await program.methods
+      //   .initializeTokenDeposit(wallet.publicKey)
+      //   .accounts({
+      //     authority: publicKey,
+      //     systemProgram: SystemProgram.programId,
+      //     userWallet: userWalletAddress,
+      //     userVault: userVaultAddress,
+      //     tokenMint: usdcPublicKey,
+      //   })
+      //   .instruction();
+      const liquidity = amountToLamports(inputData.liquidity);
+
+      const dm = await program.methods
+        .tokenDeposit(userVaultBump, liquidity)
+        .accounts({
+          authority: publicKey,
+          systemProgram: SystemProgram.programId,
+          tokenAta: token_ata,
+          userWallet: userWalletAddress,
+          userVault: userVaultAddress,
+          tokenMint: usdcPublicKey,
+        })
+        .instruction();
+      const tx_add = new Transaction().add(dm);
+      const tx_final_add = await provider.sendAndConfirm(tx_add);
+
       const ix = await program.methods
         .createMarket(
           uuid,
@@ -324,9 +339,8 @@ export default function CreateMarketPage() {
           vaultUsdc: vaultAddress,
         })
         .instruction();
-
       const ix2 = await program.methods
-        .adminAddLiquidity(uuid, vaultBump, new BN(1000000000))
+        .adminAddLiquidity(uuid, vaultBump, userVaultBump, liquidity)
         .accounts({
           authority: publicKey,
           systemProgram: SystemProgram.programId,
@@ -336,6 +350,8 @@ export default function CreateMarketPage() {
           vaultUsdc: vaultAddress,
           tokenAta: token_ata,
           adminAccount: adminAddress,
+          userWallet: userWalletAddress,
+          userVault: userVaultAddress,
         })
         .instruction();
       const tx = new Transaction().add(ix).add(ix2);
@@ -348,9 +364,11 @@ export default function CreateMarketPage() {
     try {
       const marketData = await program.account.marketEvent.fetch(eventAccount);
       console.log("market data", marketData);
-      if(marketData){
-        const activateMarket = await api.activateMarket(uuid);
+      if (marketData) {
+        const activateMarket = await api.activateMarket(marketId);
+        const activateLiquidity = await api.activateLiquidity(marketId);
         console.log(activateMarket);
+        console.log(activateLiquidity);
       }
     } catch (err) {
       console.log(err);

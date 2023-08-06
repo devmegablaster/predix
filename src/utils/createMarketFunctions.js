@@ -9,6 +9,14 @@ export const getAccountAddresses = (uuid, publicKey, ProgramID) => {
     [Buffer.from("admin"), publicKey.toBuffer()],
     ProgramID
   );
+  const [userWalletAddress, userWalletBump] = PublicKey.findProgramAddressSync(
+    [Buffer.from("user-wallet"), publicKey.toBuffer()],
+    ProgramID
+  );
+  const [userVaultAddress, userVaultBump] = PublicKey.findProgramAddressSync(
+    [Buffer.from("user-vault"), publicKey.toBuffer()],
+    ProgramID
+  );
   const [vaultAddress, vaultBump] = PublicKey.findProgramAddressSync(
     [Buffer.from("usdc-vault"), Buffer.from(uuid)],
     ProgramID
@@ -31,5 +39,8 @@ export const getAccountAddresses = (uuid, publicKey, ProgramID) => {
     userStateBump,
     usdcAddress,
     usdcPublicKey,
+    userWalletAddress,
+    userVaultAddress,
+    userVaultBump
   };
 };

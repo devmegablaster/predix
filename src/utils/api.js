@@ -1,7 +1,7 @@
 import Axios from "axios";
 
 export default class Api {
-  backendURL = "http://35.174.173.114:8080/v1";
+  backendURL = "http://3.231.194.131:8080/v1";
   async fetchCategories() {
     try {
       const resp = await Axios({
@@ -46,6 +46,21 @@ export default class Api {
       return err.response.data;
     }
   }
+  async addLiquidity(data) {
+    try {
+      const resp = await Axios({
+        method: "post",
+        url: this.backendURL + `/liquidity/add`,
+        data: data,
+      });
+      return resp.data;
+    } catch (err) {
+      if (!err.response) {
+        return "err";
+      }
+      return err.response.data;
+    }
+  }
   async addOutcomes(data) {
     try {
       const resp = await Axios({
@@ -75,17 +90,33 @@ export default class Api {
       return err.response.data;
     }
   }
-  async fetchParticularMarket(id) {    try {
-    const resp = await Axios({
-      method: "get",
-      url: this.backendURL + `/marketDetails/fetch?id=${id}`,
-    });
-    return resp.data;
-  } catch (err) {
-    if (!err.response) {
-      return "err";
+  async activateLiquidity(id) {
+    try {
+      const resp = await Axios({
+        method: "put",
+        url: this.backendURL + `/liquidity/activate?id=${id}`,
+      });
+      return resp.data;
+    } catch (err) {
+      if (!err.response) {
+        return "err";
+      }
+      return err.response.data;
     }
-    return err.response.data;
-  }}
+  }
+  async fetchParticularMarket(id) {
+    try {
+      const resp = await Axios({
+        method: "get",
+        url: this.backendURL + `/marketDetails/fetch?id=${id}`,
+      });
+      return resp.data;
+    } catch (err) {
+      if (!err.response) {
+        return "err";
+      }
+      return err.response.data;
+    }
+  }
 }
 
