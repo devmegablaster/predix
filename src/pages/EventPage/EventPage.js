@@ -58,6 +58,7 @@ export default function EventPage() {
   const { eventId } = useParams();
   console.log(eventId);
   const [eventData, setEventData] = useState({});
+  const [outcomeData, setOutcomeData] = useState([]);
 
   useEffect(() => {
     if (wallet) {
@@ -71,7 +72,10 @@ export default function EventPage() {
   const fetchEventData = async () => {
     try {
       const data = await api.fetchParticularMarket(eventId);
+      const outcomeData = await api.fetchParticularMarketOutcome(eventId);
+
       if (data.success) setEventData(data.data?.marketrestructuredResponse[0]);
+      if(outcomeData.success) setOutcomeData(outcomeData.data?.outcomeInfo);
       console.log(data.data?.marketrestructuredResponse);
       console.log(data);
     } catch (error) {
@@ -84,6 +88,8 @@ export default function EventPage() {
   };
 
   const checkMarketExists = async (program, userStateAddress) => {
+          console.log("user state address", userStateAddress);
+
     try {
       const marketData = await program.account.share.fetch(userStateAddress);
       console.log(marketData, "user");

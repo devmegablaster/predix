@@ -118,5 +118,19 @@ export default class Api {
       return err.response.data;
     }
   }
+  async fetchParticularMarketOutcome(id) {
+    try {
+      const resp = await Axios({
+        method: "get",
+        url: this.backendURL + `/outcomes/fetch/market?marketId=${id}`,
+      });
+      return resp.data;
+    } catch (err) {
+      if (!err.response) {
+        return "err";
+      }
+      return err.response.data;
+    }
+  }
 }
 

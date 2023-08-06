@@ -128,13 +128,18 @@ export default function CreateMarketPage() {
     );
 
     if (mode === "single") {
-      lowerBound = inputData.outcomesLower.map((_, index) => index);
+      lowerBound = inputData.outcomesLower.map((_, index) => index+1);
       upperBound = lowerBound;
     } else if (mode === "range") {
       lowerBound = inputData.outcomesLower;
       upperBound = inputData.outcomesUpper;
     }
-
+  // while (lowerBound.length < 10) {
+  //   lowerBound.push(0);
+  // }
+  // while (upperBound.length < 10) {
+  //   upperBound.push(0);
+  // }
     return {
       lowerBound,
       upperBound,
@@ -346,7 +351,9 @@ export default function CreateMarketPage() {
         const tx_add = new Transaction().add(id).add(dm);
         const tx_final_add = await provider.sendAndConfirm(tx_add);
       }
-
+      console.log("lower bound", lowerBound);
+      console.log("upper bound", upperBound);
+      console.log(numOutcomes);
       const ix = await program.methods
         .createMarket(
           uuid,
@@ -356,7 +363,7 @@ export default function CreateMarketPage() {
           "=",
           lowerBound,
           upperBound,
-          0.0,
+          1.0,
           numOutcomes,
           1.0
         )
