@@ -171,7 +171,7 @@ export default function MarketsContainer() {
     console.log("hello");
     try {
       const data = await api.fetchCategories();
-      console.log("data",data);
+      console.log("data", data);
       if (data.success)
         setCategories([{ id: 0, name: "All" }, ...data.data?.categoryInfo]);
       console.log(data);
@@ -205,9 +205,8 @@ export default function MarketsContainer() {
                 <button
                   key={idx}
                   ref={(el) => (tabsRef.current[idx] = el)}
-                  className={`pt-2 pb-1 font-bold ${
-                    isActive ? "active-tab" : ""
-                  }`}
+                  className={`pt-2 pb-1 font-bold ${isActive ? "active-tab" : ""
+                    }`}
                   onClick={() => {
                     setSelectedTab(tab.name);
                     setActiveTabIndex(idx);
@@ -271,9 +270,10 @@ export default function MarketsContainer() {
                       </div>
                     </div>
                     <div className="markets_main_cardscontainer_card_content_top_right">
+                      {console.log(card)}
                       <img
-                        className="w-full"
-                        src={EventImage}
+                        className="w-full rounded-xl object-cover h-32"
+                        src={card.marketDetails.imageURL !== "image" ? "https://ipfs.io/ipfs/" + card.marketDetails.imageURL : EventImage}
                         alt="eventImage"
                       />
                     </div>
