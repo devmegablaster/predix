@@ -28,10 +28,9 @@ import {
   TOKEN_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
-import { v4 as uuidv4 } from "uuid";
 import { useParams } from "react-router-dom";
 
-import { getAccountAddresses } from "../../utils/createMarketFunctions.js";
+import { getAccountAddresses } from "../../utils/createEventFunctions.js";
 
 import "./EventPage.scss";
 import ToggleAddRemove from "../../components/EventsPage/ToggleAddRemove";
@@ -49,6 +48,7 @@ export default function EventPage() {
   const wallet = useAnchorWallet();
   const [modeAR, setModeAR] = useState("add");
   const [modeBS, setModeBS] = useState("buy");
+  const [liquidityValue, setLiquidityValue] = useState(0);
 
   const { publicKey, sendTransaction } = useWallet();
   const ProgramID = new PublicKey(ProgramIDL.metadata.address);
@@ -71,7 +71,8 @@ export default function EventPage() {
   const fetchEventData = async () => {
     try {
       const data = await api.fetchParticularMarket(eventId);
-      if (data.success) setEventData(data.data?.marketDetailsInfo);
+      if (data.success) setEventData(data.data?.marketrestructuredResponse[0]);
+      console.log(data.data?.marketrestructuredResponse);
       console.log(data);
     } catch (error) {
       console.log("some error occured");
@@ -80,7 +81,6 @@ export default function EventPage() {
 
   const onClick = async () => {
     if (!publicKey) throw new WalletNotConnectedError();
-
   };
 
   const checkMarketExists = async (program, userStateAddress) => {
@@ -95,119 +95,237 @@ export default function EventPage() {
     } catch (err) {
       console.log(err.message);
       if (err.message.includes("Account does not exist")) return false;
+      else return true;
+    }
+  };
+  const amountToLamports = (sol) => {
+    const LAMPORTS_PER_SOL = new BN(1000000000);
+    return new BN(sol).mul(LAMPORTS_PER_SOL);
+  };
+  const lamportsToAmount = (sol) => {
+    const LAMPORTS_PER_SOL = new BN(1000000000);
+    return new BN(sol).div(LAMPORTS_PER_SOL);
+  };
+  const checkUserWalletExists = async (program, userWalletAddress) => {
+    try {
+      const walletData = await program.account.userWallet.fetch(
+        userWalletAddress
+      );
+      console.log(walletData, "user");
+
+      if (walletData.balance) {
+        return true;
+      }
+    } catch (err) {
+      console.log(err.message);
+      if (err.message.includes("Account does not exist")) return false;
+      else return true;
+
     }
   };
   const onAddRemoveClick = async () => {
-    const uuid = "11";
+    const contractID = eventData?.marketDetails?.marketContractId;
+    console.log(contractID);
+    console.log(publicKey);
+    console.log(ProgramID);
+    if (contractID && contractID !== "") {
+      const {
+        eventAccount,
+        eventBump,
+        vaultAddress,
+        vaultBump,
+        userStateAddress,
+        userStateBump,
+        usdcAddress,
+        usdcPublicKey,
+        userWalletAddress,
+        userVaultAddress,
+        userVaultBump,
+      } = getAccountAddresses(contractID, publicKey, ProgramID);
+      if (!publicKey) throw new WalletNotConnectedError();
+      const token_ata = await getAssociatedTokenAddress(
+        usdcPublicKey,
+        publicKey,
+        false,
+        TOKEN_PROGRAM_ID,
+        ASSOCIATED_TOKEN_PROGRAM_ID
+      );
+      const program = new Program(ProgramIDL, ProgramID, provider);
 
-    const {
-      eventAccount,
-      eventBump,
-      adminAddress,
-      adminBump,
-      vaultAddress,
-      vaultBump,
-      userStateAddress,
-      userStateBump,
-      usdcAddress,
-      usdcPublicKey,
-    } = getAccountAddresses(uuid, publicKey, ProgramID);
-    if (!publicKey) throw new WalletNotConnectedError();
-    const token_ata = await getAssociatedTokenAddress(
-      usdcPublicKey,
-      publicKey,
-      false,
-      TOKEN_PROGRAM_ID,
-      ASSOCIATED_TOKEN_PROGRAM_ID
-    );
-    const program = new Program(ProgramIDL, ProgramID, provider);
+      console.log("vpda", eventBump);
+      console.log("data_acccount", eventAccount);
+      let marketExists = await checkMarketExists(program, userStateAddress);
+      console.log("me", marketExists);
+      let walletExists = await checkUserWalletExists(
+        program,
+        userWalletAddress
+      );
+      const liquidity = amountToLamports(liquidityValue);
 
-    console.log("vpda", eventBump);
-    console.log("data_acccount", eventAccount);
-    let marketExists = await checkMarketExists(program, userStateAddress);
-    console.log("me", marketExists);
-    if (modeAR === "add") {
-      try {
-        if (!marketExists) {
-          let ix1 = await program.methods
-            .initialiseUserState(uuid)
-            .accounts({
-              authority: publicKey,
-              systemProgram: SystemProgram.programId,
-              marketAccount: eventAccount,
-              userMarketShare: userStateAddress,
-            })
-            .instruction();
-          let ix2 = await program.methods
-            .addLiquidity(uuid, vaultBump, new BN(1000000000))
-            .accounts({
-              authority: publicKey,
-              systemProgram: SystemProgram.programId,
-              marketAccount: eventAccount,
-              userMarketShare: userStateAddress,
-              tokenMint: usdcPublicKey,
-              vaultUsdc: vaultAddress,
-              tokenAta: token_ata,
-            })
-            .instruction();
+      if (modeAR === "add") {
+        try {
+          const liquidityData = {
+            walletAddress: publicKey.toBase58(),
+            amount: parseFloat(liquidityValue),
+            type: "Add",
+            marketDetailsId: eventId,
+          };
+          const res = await api.addLiquidity(liquidityData);
+          if (res.success) {
+            console.log(res.data);
+            const liquidityId = String(res.data.liquidityInfo[0].id);
 
-          let tx = new Transaction().add(ix1).add(ix2);
-          await program.provider.sendAndConfirm(tx);
-          console.log(tx);
-        } else {
-          let ix = await program.methods
-            .addLiquidity(uuid, vaultBump, new BN(1000000000))
-            .accounts({
-              authority: publicKey,
-              systemProgram: SystemProgram.programId,
-              marketAccount: eventAccount,
-              userMarketShare: userStateAddress,
-              tokenMint: usdcPublicKey,
-              vaultUsdc: vaultAddress,
-              tokenAta: token_ata,
-            })
-            .instruction();
+            if (walletExists) {
+              const dm = await program.methods
+                .tokenDeposit(userVaultBump, liquidity)
+                .accounts({
+                  authority: publicKey,
+                  systemProgram: SystemProgram.programId,
+                  tokenAta: token_ata,
+                  userWallet: userWalletAddress,
+                  userVault: userVaultAddress,
+                  tokenMint: usdcPublicKey,
+                })
+                .instruction();
+              const tx_add = new Transaction().add(dm);
+              const tx_final_add = await provider.sendAndConfirm(tx_add);
+            } else {
+              const id = await program.methods
+                .initializeTokenDeposit(wallet.publicKey)
+                .accounts({
+                  authority: publicKey,
+                  systemProgram: SystemProgram.programId,
+                  userWallet: userWalletAddress,
+                  userVault: userVaultAddress,
+                  tokenMint: usdcPublicKey,
+                })
+                .instruction();
 
-          let tx = new Transaction().add(ix);
-          await program.provider.sendAndConfirm(tx);
-          console.log(tx);
+              const dm = await program.methods
+                .tokenDeposit(userVaultBump, liquidity)
+                .accounts({
+                  authority: publicKey,
+                  systemProgram: SystemProgram.programId,
+                  tokenAta: token_ata,
+                  userWallet: userWalletAddress,
+                  userVault: userVaultAddress,
+                  tokenMint: usdcPublicKey,
+                })
+                .instruction();
+              const tx_add = new Transaction().add(id).add(dm);
+              const tx_final_add = await provider.sendAndConfirm(tx_add);
+            }
+            if (!marketExists) {
+              let ix1 = await program.methods
+                .initialiseUserState(contractID)
+                .accounts({
+                  authority: publicKey,
+                  systemProgram: SystemProgram.programId,
+                  marketAccount: eventAccount,
+                  userMarketShare: userStateAddress,
+                })
+                .instruction();
+              let ix2 = await program.methods
+                .addLiquidity(contractID, vaultBump, userVaultBump, liquidity)
+                .accounts({
+                  authority: publicKey,
+                  systemProgram: SystemProgram.programId,
+                  marketAccount: eventAccount,
+                  userMarketShare: userStateAddress,
+                  tokenMint: usdcPublicKey,
+                  vaultUsdc: vaultAddress,
+                  userWallet: userWalletAddress,
+                  userVault: userVaultAddress,
+                  tokenAta: token_ata,
+                })
+                .instruction();
+
+              let tx = new Transaction().add(ix1).add(ix2);
+              await program.provider.sendAndConfirm(tx);
+              console.log(tx);
+              if (tx) {
+                const activateLiquidity = await api.activateLiquidity(
+                  liquidityId
+                );
+                console.log(activateLiquidity);
+              }
+            } else {
+              let ix = await program.methods
+                .addLiquidity(contractID, vaultBump, userVaultBump, liquidity)
+                .accounts({
+                  authority: publicKey,
+                  systemProgram: SystemProgram.programId,
+                  marketAccount: eventAccount,
+                  userMarketShare: userStateAddress,
+                  tokenMint: usdcPublicKey,
+                  vaultUsdc: vaultAddress,
+                  userWallet: userWalletAddress,
+                  userVault: userVaultAddress,
+                  tokenAta: token_ata,
+                })
+                .instruction();
+
+              let tx = new Transaction().add(ix);
+              await program.provider.sendAndConfirm(tx);
+              console.log(tx);
+              if (tx) {
+                const activateLiquidity = await api.activateLiquidity(
+                  liquidityId
+                );
+                console.log(activateLiquidity);
+              }
+            }
+          }
+        } catch (err) {
+          console.log(err);
         }
-      } catch (err) {
-        console.log(err);
-      }
-    } else {
-      try {
-        if (!marketExists) {
-          console.log("There is no liquidity added!");
-        } else {
-          let ix = await program.methods
-            .removeLiquidity(uuid, vaultBump, new BN(1000000000))
-            .accounts({
-              authority: publicKey,
-              systemProgram: SystemProgram.programId,
-              marketAccount: eventAccount,
-              userMarketShare: userStateAddress,
-              tokenMint: usdcPublicKey,
-              vaultUsdc: vaultAddress,
-              tokenAta: token_ata,
-            })
-            .instruction();
+      } else {
+        try {
+          if (!marketExists) {
+            console.log("There is no liquidity added!");
+                         const userBalance =
+                           await program.account.userWallet.fetch(
+                             userWalletAddress
+                           );
+                         console.log(
+                           lamportsToAmount(userBalance.balance).toString()
+                         );
+          } else {
+            let ix = await program.methods
+              .removeLiquidity(contractID, vaultBump, userVaultBump, liquidity)
+              .accounts({
+                authority: publicKey,
+                systemProgram: SystemProgram.programId,
+                marketAccount: eventAccount,
+                userMarketShare: userStateAddress,
+                tokenMint: usdcPublicKey,
+                vaultUsdc: vaultAddress,
+                tokenAta: token_ata,
+                userWallet: userWalletAddress,
+                userVault: userVaultAddress,
+              })
+              .instruction();
 
-          let tx = new Transaction().add(ix);
-          await program.provider.sendAndConfirm(tx);
-          console.log(tx);
+            // let tx = new Transaction().add(ix);
+            // await program.provider.sendAndConfirm(tx);
+            // console.log(tx);
+             const userBalance = await program.account.userWallet.fetch(
+               userWalletAddress
+             );
+             console.log(lamportsToAmount(userBalance.balance).toString());
+          }
+        } catch (err) {
+          console.log(err);
         }
-      } catch (err) {
-        console.log(err);
       }
+
+      const marketData = await program.account.marketEvent.fetch(eventAccount);
+      console.log(marketData);
     }
-
-    const marketData = await program.account.marketEvent.fetch(eventAccount);
-    console.log(marketData);
   };
   const onBuySellClick = async () => {
     if (!publicKey) throw new WalletNotConnectedError();
-    const uuid = "11";
+    const contractID = "11";
 
     const {
       eventAccount,
@@ -220,7 +338,7 @@ export default function EventPage() {
       userStateBump,
       usdcAddress,
       usdcPublicKey,
-    } = getAccountAddresses(uuid, publicKey, ProgramID);
+    } = getAccountAddresses(contractID, publicKey, ProgramID);
     const token_ata = await getAssociatedTokenAddress(
       usdcPublicKey,
       publicKey,
@@ -247,7 +365,7 @@ export default function EventPage() {
             })
             .instruction();
           let ix2 = await program.methods
-            .buyOutcomeShare(uuid, new BN(1000000000), "1", vaultBump)
+            .buyOutcomeShare(contractID, new BN(1000000000), "1", vaultBump)
             .accounts({
               authority: publicKey,
               systemProgram: SystemProgram.programId,
@@ -264,7 +382,7 @@ export default function EventPage() {
           console.log(tx);
         } else {
           let ix = await program.methods
-            .addLiquidity(uuid, vaultBump, new BN(1000000000))
+            .addLiquidity(contractID, vaultBump, new BN(1000000000))
             .accounts({
               authority: publicKey,
               systemProgram: SystemProgram.programId,
@@ -289,7 +407,7 @@ export default function EventPage() {
           console.log("There is no liquidity added!");
         } else {
           let ix = await program.methods
-            .removeLiquidity(uuid, vaultBump, new BN(1000000000))
+            .removeLiquidity(contractID, vaultBump, new BN(1000000000))
             .accounts({
               authority: publicKey,
               systemProgram: SystemProgram.programId,
@@ -424,16 +542,17 @@ export default function EventPage() {
           </div>
           <div className="event_header_detailscontainer">
             <div className="event_header_detailscontainer_name">
-              {eventData?.description}
+              {eventData?.marketDetails?.description}
             </div>
             <div className="event_header_detailscontainer_other">
               <div className="event_header_detailscontainer_other_label">
                 {" "}
                 <img src={TagPurple} alt="tag" />
-                {cardData.type}
+                {eventData?.category?.name}
               </div>
               <div className="event_header_detailscontainer_other_detail">
-                <img src={EventIcon} alt="volume" /> {cardData.date}
+                <img src={EventIcon} alt="volume" />{" "}
+                {eventData?.marketDetails?.closeTime?.substring(0, 10)}
               </div>
               <div className="event_header_detailscontainer_other_detail">
                 <img src={VolumeIcon} alt="volume" /> {cardData.volume}
@@ -689,7 +808,14 @@ export default function EventPage() {
               <div className="event_main_right_liquiditycontainer_formcontainer_title">
                 USDC Amount
               </div>
-              <input className="event_main_right_liquiditycontainer_formcontainer_input" />
+              <input
+                type="number"
+                value={liquidityValue}
+                onChange={(e) => {
+                  setLiquidityValue(e.target.value);
+                }}
+                className="event_main_right_liquiditycontainer_formcontainer_input"
+              />
               {modeAR === "add" && (
                 <div
                   onClick={onAddRemoveClick}

@@ -6,6 +6,7 @@ import ChooseOutcome from "./ChooseOutcome";
 import FundingInformation from "./FundingInformation";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 import axios from "axios";
+import short from "short-uuid";
 
 import {
   useConnection,
@@ -29,6 +30,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { getAccountAddresses } from "../../utils/createMarketFunctions.js";
 import Api from "../../utils/api";
+import { parse } from "url";
 
 export default function CreateMarketPage() {
   const { connection } = useConnection();
@@ -140,10 +142,10 @@ export default function CreateMarketPage() {
       eventCloseTime,
     };
   };
-  function amountToLamports(sol) {
+  const amountToLamports = (sol) => {
     const LAMPORTS_PER_SOL = new BN(1000000000);
     return new BN(sol).mul(LAMPORTS_PER_SOL);
-  }
+  };
   const getApiConfig = async () => {
     const config = {
       headers: {
@@ -189,9 +191,25 @@ export default function CreateMarketPage() {
       //  Handle error
     }
   };
+  const checkUserWalletExists = async (program, userWalletAddress) => {
+    try {
+      const walletData = await program.account.userWallet.fetch(
+        userWalletAddress
+      );
+      console.log(walletData, "user");
+
+      if (walletData.balance) {
+        return true;
+      }
+    } catch (err) {
+      console.log(err.message);
+      if (err.message.includes("Account does not exist")) return false;
+    }
+  };
   const handleNext = async () => {
     if (isLastStep) {
       if (!publicKey) throw new WalletNotConnectedError();
+      let uuidMarket = short.generate();
       const { lowerBound, upperBound, numOutcomes, eventCloseTime } =
         getMarketDetails();
       let res = { IpfsHash: "QmYz44TZqHXeaQ4jKVEECcRMNC8JCD4hEMwtahXqAjRkJX" };
@@ -206,9 +224,7 @@ export default function CreateMarketPage() {
         name: outcome,
         lowerBound: inputData.outcomesLower[index],
         upperBound: inputData.outcomesUpper[index],
-        marketDetailsId: "1",
       }));
-      let uuidMarket = "46";
       const marketData = {
         marketName: inputData.name,
         marketContractId: uuidMarket,
@@ -232,24 +248,17 @@ export default function CreateMarketPage() {
         );
         const liquidityData = {
           walletAddress: publicKey.toBase58(),
-          amount: String(inputData.liquidity),
+          amount: parseFloat(inputData.liquidity),
           type: "Add",
           marketDetailsId: marketId,
         };
         const res = await api.addLiquidity(liquidityData);
         if (res.success) {
-          await createMarketOnChain(uuidMarket, marketId);
+          console.log(res.data);
+          const liquidityId = String(res.data.liquidityInfo[0].id);
+          await createMarketOnChain(uuidMarket, marketId, liquidityId);
         }
       }
-
-      // let uuid = null;
-      // if (response.success) uuid = response.data.marketDetailsInfo.insertId;
-      // if (uuid) {
-      //   const outcomeReponse = await api.addOutcomes(outcomeArray);
-      //   console.log(outcomeReponse);
-      //   if (outcomeReponse.success) {
-      //   }
-      // }
     } else {
       setActiveTabIndex(activeTabIndex + 1);
     }
@@ -260,7 +269,7 @@ export default function CreateMarketPage() {
     console.log(response);
     return response;
   };
-  const createMarketOnChain = async (uuid, marketId) => {
+  const createMarketOnChain = async (uuid, marketId, liquidityId) => {
     const { lowerBound, upperBound, numOutcomes, eventCloseTime } =
       getMarketDetails();
     const {
@@ -291,31 +300,52 @@ export default function CreateMarketPage() {
     console.log("data_acccount", eventAccount);
 
     try {
-      // const id = await program.methods
-      //   .initializeTokenDeposit(wallet.publicKey)
-      //   .accounts({
-      //     authority: publicKey,
-      //     systemProgram: SystemProgram.programId,
-      //     userWallet: userWalletAddress,
-      //     userVault: userVaultAddress,
-      //     tokenMint: usdcPublicKey,
-      //   })
-      //   .instruction();
+      let walletExists = await checkUserWalletExists(
+        program,
+        userWalletAddress
+      );
       const liquidity = amountToLamports(inputData.liquidity);
+      console.log(walletExists);
+      if (walletExists) {
+        const dm = await program.methods
+          .tokenDeposit(userVaultBump, liquidity)
+          .accounts({
+            authority: publicKey,
+            systemProgram: SystemProgram.programId,
+            tokenAta: token_ata,
+            userWallet: userWalletAddress,
+            userVault: userVaultAddress,
+            tokenMint: usdcPublicKey,
+          })
+          .instruction();
+        const tx_add = new Transaction().add(dm);
+        const tx_final_add = await provider.sendAndConfirm(tx_add);
+      } else {
+        const id = await program.methods
+          .initializeTokenDeposit(wallet.publicKey)
+          .accounts({
+            authority: publicKey,
+            systemProgram: SystemProgram.programId,
+            userWallet: userWalletAddress,
+            userVault: userVaultAddress,
+            tokenMint: usdcPublicKey,
+          })
+          .instruction();
 
-      const dm = await program.methods
-        .tokenDeposit(userVaultBump, liquidity)
-        .accounts({
-          authority: publicKey,
-          systemProgram: SystemProgram.programId,
-          tokenAta: token_ata,
-          userWallet: userWalletAddress,
-          userVault: userVaultAddress,
-          tokenMint: usdcPublicKey,
-        })
-        .instruction();
-      const tx_add = new Transaction().add(dm);
-      const tx_final_add = await provider.sendAndConfirm(tx_add);
+        const dm = await program.methods
+          .tokenDeposit(userVaultBump, liquidity)
+          .accounts({
+            authority: publicKey,
+            systemProgram: SystemProgram.programId,
+            tokenAta: token_ata,
+            userWallet: userWalletAddress,
+            userVault: userVaultAddress,
+            tokenMint: usdcPublicKey,
+          })
+          .instruction();
+        const tx_add = new Transaction().add(id).add(dm);
+        const tx_final_add = await provider.sendAndConfirm(tx_add);
+      }
 
       const ix = await program.methods
         .createMarket(
@@ -366,7 +396,7 @@ export default function CreateMarketPage() {
       console.log("market data", marketData);
       if (marketData) {
         const activateMarket = await api.activateMarket(marketId);
-        const activateLiquidity = await api.activateLiquidity(marketId);
+        const activateLiquidity = await api.activateLiquidity(liquidityId);
         console.log(activateMarket);
         console.log(activateLiquidity);
       }

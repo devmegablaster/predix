@@ -258,7 +258,7 @@ export default function MarketsContainer() {
                       <div className="markets_main_cardscontainer_card_content_top_left_tagcontainer">
                         <div className="markets_main_cardscontainer_card_content_top_left_tagcontainer_label">
                           <img src={TagPurple} alt="tag" />
-                          {card?.category[0]?.name}
+                          {card?.category?.name}
                         </div>
                         <img
                           className="w-5"

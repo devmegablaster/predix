@@ -64,7 +64,7 @@ export default function FundingInformation({ inputData, setInputData }) {
         </div>
         <input
           className="fundinginfo_wallet_input"
-          type="text"
+          type="number"
           value={inputData.liquidity}
           onChange={(e) => handleLiquidityChange(e.target.value)}
         />
