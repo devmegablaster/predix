@@ -125,7 +125,7 @@ export default function ChooseOutcome({
                 }}
                 value={outcome}
                 className="chooseoutcome_outcome_left_input"
-                type={mode === "range" ? "number" : "string"}
+                type={"string"}
                 onChange={(e) => handleOutcomeNameChange(id, e.target.value)}
               />
 

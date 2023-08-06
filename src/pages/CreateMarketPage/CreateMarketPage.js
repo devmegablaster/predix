@@ -59,8 +59,8 @@ export default function CreateMarketPage() {
     resolutionType: "",
     closeDateTime: new Date(new Date().setMonth(new Date().getMonth() + 1)),
     outcomesNames: ["Yes", "No"],
-    outcomesLower: [0, 1],
-    outcomesUpper: [0, 1],
+    outcomesLower: [1, 2],
+    outcomesUpper: [1, 2],
     imageFile: null,
     imageIPFSHash: "",
     platformFees: 0,
@@ -128,18 +128,19 @@ export default function CreateMarketPage() {
     );
 
     if (mode === "single") {
-      lowerBound = inputData.outcomesLower.map((_, index) => index+1);
+      lowerBound = inputData.outcomesLower.map((_, index) => index + 1);
+      console.log("lower bound", lowerBound);
       upperBound = lowerBound;
     } else if (mode === "range") {
       lowerBound = inputData.outcomesLower;
       upperBound = inputData.outcomesUpper;
     }
-  // while (lowerBound.length < 10) {
-  //   lowerBound.push(0);
-  // }
-  // while (upperBound.length < 10) {
-  //   upperBound.push(0);
-  // }
+    // while (lowerBound.length < 10) {
+    //   lowerBound.push(0);
+    // }
+    // while (upperBound.length < 10) {
+    //   upperBound.push(0);
+    // }
     return {
       lowerBound,
       upperBound,
@@ -224,12 +225,22 @@ export default function CreateMarketPage() {
         console.log(res);
         console.log(eventImageURL);
       }
+      let outcomeArray = [];
 
-      const outcomeArray = inputData.outcomesNames.map((outcome, index) => ({
-        name: outcome,
-        lowerBound: inputData.outcomesLower[index],
-        upperBound: inputData.outcomesUpper[index],
-      }));
+      if (mode === "single") {
+        outcomeArray = inputData.outcomesNames.map((outcome, index) => ({
+          name: outcome,
+          lowerBound: lowerBound[index],
+          upperBound: upperBound[index],
+        }));
+      } else if (mode === "range") {
+        outcomeArray = inputData.outcomesNames.map((outcome, index) => ({
+          name: outcome,
+          lowerBound: parseFloat(inputData.outcomesLower[index]),
+          upperBound: parseFloat(inputData.outcomesUpper[index]),
+        }));
+      }
+
       const marketData = {
         marketName: inputData.name,
         marketContractId: uuidMarket,
