@@ -545,7 +545,7 @@ export default function EventPage() {
       <div className="event_header">
         <div className="flex w-full gap-4">
           <div className="event_header_imagecontainer">
-            <img className="w-32 h-32" src={cardData.icon} alt="event" />
+            <img className="w-32 h-32" src={Object.keys(eventData).length > 0 ? eventData?.marketDetails?.imageURL !== "image" ? "https://ipfs.io/ipfs/" + eventData?.marketDetails?.imageURL : cardData.icon : cardData.icon} alt="event" />
           </div>
           <div className="event_header_detailscontainer">
             <div className="event_header_detailscontainer_name">
