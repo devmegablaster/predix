@@ -49,6 +49,7 @@ export default function EventPage() {
   const [modeAR, setModeAR] = useState("add");
   const [modeBS, setModeBS] = useState("buy");
   const [liquidityValue, setLiquidityValue] = useState(0);
+  const [selectedOutcome, setSelectedOutcome] = useState(null);
 
   const { publicKey, sendTransaction } = useWallet();
   const ProgramID = new PublicKey(ProgramIDL.metadata.address);
@@ -75,7 +76,7 @@ export default function EventPage() {
       const outcomeData = await api.fetchParticularMarketOutcome(eventId);
 
       if (data.success) setEventData(data.data?.marketrestructuredResponse[0]);
-      if(outcomeData.success) setOutcomeData(outcomeData.data?.outcomeInfo);
+      if (outcomeData.success) setOutcomeData(outcomeData.data?.outcomeInfo);
       console.log(data.data?.marketrestructuredResponse);
       console.log(data);
     } catch (error) {
@@ -88,7 +89,7 @@ export default function EventPage() {
   };
 
   const checkMarketExists = async (program, userStateAddress) => {
-          console.log("user state address", userStateAddress);
+    console.log("user state address", userStateAddress);
 
     try {
       const marketData = await program.account.share.fetch(userStateAddress);
@@ -289,13 +290,13 @@ export default function EventPage() {
         try {
           if (!marketExists) {
             console.log("There is no liquidity added!");
-                         const userBalance =
-                           await program.account.userWallet.fetch(
-                             userWalletAddress
-                           );
-                         console.log(
-                           lamportsToAmount(userBalance.balance).toString()
-                         );
+            const userBalance =
+              await program.account.userWallet.fetch(
+                userWalletAddress
+              );
+            console.log(
+              lamportsToAmount(userBalance.balance).toString()
+            );
           } else {
             let ix = await program.methods
               .removeLiquidity(contractID, vaultBump, userVaultBump, liquidity)
@@ -315,10 +316,10 @@ export default function EventPage() {
             // let tx = new Transaction().add(ix);
             // await program.provider.sendAndConfirm(tx);
             // console.log(tx);
-             const userBalance = await program.account.userWallet.fetch(
-               userWalletAddress
-             );
-             console.log(lamportsToAmount(userBalance.balance).toString());
+            const userBalance = await program.account.userWallet.fetch(
+              userWalletAddress
+            );
+            console.log(lamportsToAmount(userBalance.balance).toString());
           }
         } catch (err) {
           console.log(err);
@@ -668,9 +669,8 @@ export default function EventPage() {
               <span>About this market</span>
             </div>
             <div
-              className={`event_main_left_aboutcontainer_expand ${
-                showMore ? "expanded" : ""
-              }`}
+              className={`event_main_left_aboutcontainer_expand ${showMore ? "expanded" : ""
+                }`}
             >
               <div className="event_main_left_aboutcontainer_description">
                 This market will resolve to 'YES' if DeGods NFT floor price is
@@ -710,50 +710,26 @@ export default function EventPage() {
             <div className="event_main_right_holdingcontainer_title">
               Manage Holding
             </div>
+            <div className="h-full flex flex-col w-full space-y-2">
+              <h2 className="py-2 text-white text-lg font-semibold">Choose Outcome</h2>
+              <div className="w-full h-48 overflow-y-scroll p-2 flex flex-col space-y-2">
+                {
+                  outcomeData.map((outcome, index) => (
+                    <div key={index} onClick={() => {
+                      setSelectedOutcome(outcome)
+                    }} className={`flex py-6 flex-row justify-between items-center w-full border cursor-pointer bg-[#090909] rounded-lg px-5 ${selectedOutcome?.id === outcome.id ? "border-white" : "border-[#252525]"} `}>
+                      <h2 className="text-white text-lg">{outcome.name}</h2>
+                      <div className="bg-[#101010] p-3 items-center rounded-lg flex flex-col space-y-1 border border-white/20">
+                        <h2 className="text-white text-lg">$0.10</h2>
+                        <h2 className="text-[#646464] text-sm">LP Value </h2>
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+            </div>
             <ToggleBuySell id="buysell" modeBS={modeBS} setModeBS={setModeBS} />
 
-            <div className="event_main_right_holdingcontainer_bar">
-              <div className="event_main_right_holdingcontainer_bar_green"></div>
-              <div className="event_main_right_holdingcontainer_bar_red"></div>
-            </div>
-            <div className="event_main_right_holdingcontainer_yesnobuttons">
-              <div
-                className={`event_main_right_holdingcontainer_yesnobuttons_yes ${
-                  YesNoActive === "yes" ? "active_yes" : ""
-                }`}
-                onClick={() => handleButtonClick("yes")}
-              >
-                {" "}
-                <svg
-                  width="6"
-                  height="6"
-                  viewBox="0 0 6 6"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle cx="3" cy="3" r="3" fill="#B6F72B" />
-                </svg>
-                Yes <span>{cardData.yesPrice}</span>
-              </div>
-              <div
-                className={`event_main_right_holdingcontainer_yesnobuttons_no ${
-                  YesNoActive === "no" ? "active_no" : ""
-                }`}
-                onClick={() => handleButtonClick("no")}
-              >
-                {" "}
-                <svg
-                  width="6"
-                  height="6"
-                  viewBox="0 0 6 6"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle cx="3" cy="3" r="3" fill="#EF3F5F" />
-                </svg>
-                No <span>{cardData.noPrice}</span>
-              </div>
-            </div>
             <div className="event_main_right_holdingcontainer_formcontainer">
               <div className="event_main_right_holdingcontainer_formcontainer_title">
                 Amount in USD
