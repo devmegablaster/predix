@@ -9,12 +9,12 @@
     &_content {
       @apply flex flex-col w-full;
       &_markets {
-        @apply flex flex-col w-full py-16 px-32;
+        @apply flex flex-col w-full py-16 lg:px-32 px-16 md:px-24;
         &_title {
-          @apply text-white text-5xl text-center font-black pb-5;
+          @apply text-white lg:text-5xl text-3xl md:text-4xl text-center font-black pb-5;
         }
         &_allbutton {
-          @apply mt-8 px-8 py-4 text-lg rounded-lg w-fit mx-auto text-center font-semibold;
+          @apply mt-8 px-8 py-4 lg:text-lg rounded-lg w-fit mx-auto text-center font-semibold;
           color: #101012;
           background: var(--brand-purple, #d4d5f9);
         }
@@ -26,10 +26,10 @@
         background-repeat: no-repeat;
         background-size: cover;
         &_title {
-          @apply text-5xl font-black pb-5 text-center;
+          @apply lg:text-5xl text-3xl md:text-4xl font-black pb-5 text-center;
         }
         &_cards {
-          @apply py-16 flex flex-col w-5/12 gap-48;
+          @apply py-16 flex flex-col lg:w-5/12 w-9/12 lg:gap-48 gap-20 md:gap-24;
           &_card {
             @apply flex w-full p-6 gap-6 items-center rounded-lg;
             border: 1px solid #2b2b2b;
@@ -43,10 +43,10 @@
             &_right {
               @apply w-3/5;
               &_title {
-                @apply text-4xl font-bold;
+                @apply lg:text-4xl text-xl md:text-2xl font-bold;
               }
               &_subtitle {
-                @apply text-xl mt-4 font-semibold;
+                @apply lg:text-xl text-base md:text-lg mt-4 font-semibold;
                 color: rgba(251, 251, 251, 0.5);
               }
             }
@@ -56,14 +56,14 @@
       &_features {
         @apply flex flex-col items-center py-16 px-32 text-white;
         &_title {
-          @apply text-5xl font-black pb-5 text-center;
+          @apply lg:text-5xl text-3xl md:text-4xl font-black pb-5 text-center;
         }
         &_subtitle {
-          @apply text-lg;
+          @apply text-lg text-center lg:text-left;
           color: var(--text-grey, #dadada);
         }
         &_cards {
-          @apply flex gap-4 w-full mt-8;
+          @apply flex flex-col lg:flex-row gap-4 w-full mt-8;
           &_card {
             @apply flex flex-col w-full rounded-2xl p-8;
             background: #121212;
@@ -88,10 +88,10 @@
         background-repeat: no-repeat;
         background-size: cover;
         &_title {
-          @apply text-5xl font-bold;
+          @apply lg:text-5xl text-3xl md:text-4xl font-bold;
         }
         &_subtitle {
-          @apply text-2xl mt-2 font-semibold;
+          @apply lg:text-2xl text-xl mt-2 font-semibold text-center lg:text-left;
           color: rgba(255, 255, 255, 0.75);
         }
       }

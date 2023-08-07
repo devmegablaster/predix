@@ -13,7 +13,7 @@
         display: none;
       }
       &_tabs {
-        @apply flex space-x-16 text-xl font-semibold;
+        @apply flex space-x-16 lg:text-xl text-base font-semibold;
         color: #494949;
         &_text {
           @apply text-xl font-bold;
