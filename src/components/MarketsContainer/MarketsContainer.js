@@ -144,9 +144,12 @@ export default function MarketsContainer() {
     if (selectedTab === "All") {
       setFilteredCards(marketsData);
     } else {
+      console.log(selectedTab);
       const filtered = marketsData.filter(
-        (card) => card?.categoryName.toLowerCase() === selectedTab.toLowerCase()
+        (card) =>
+          card?.category?.name.toLowerCase() === selectedTab.toLowerCase()
       );
+      console.log(filtered);
       setFilteredCards(filtered);
     }
   }, [selectedTab, marketsData]);
@@ -245,7 +248,7 @@ export default function MarketsContainer() {
           })}
         </div>
         <div className="markets_main_cardscontainer_cards">
-          {marketsData.map((card, id) => {
+          {filteredCards.map((card, id) => {
             return (
               <Link
                 to={`/event/${card?.marketDetails?.id}`}
@@ -270,7 +273,6 @@ export default function MarketsContainer() {
                       </div>
                     </div>
                     <div className="markets_main_cardscontainer_card_content_top_right">
-                      {console.log(card)}
                       <img
                         className="w-full rounded-xl object-cover h-32"
                         src={card.marketDetails.imageURL !== "image" ? "https://ipfs.io/ipfs/" + card.marketDetails.imageURL : EventImage}
