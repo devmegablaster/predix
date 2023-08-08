@@ -10,19 +10,19 @@
       @apply text-sm font-medium mt-3 text-white;
     }
     &_header {
-      @apply relative flex w-full gap-10 px-6 py-3 mt-6 items-center border-b overflow-x-auto;
+      @apply relative flex w-full gap-10 lg:px-6 px-1 md:px-3 py-3 mt-6 items-center border-b overflow-x-auto;
       border-color: #494949;
       &::-webkit-scrollbar {
         display: none;
       }
       &_tabs {
-        @apply flex w-full space-x-16 justify-between text-xl font-semibold;
+        @apply flex w-full overflow-x-scroll lg:overflow-x-hidden lg:space-x-16 space-x-6 justify-between lg:text-xl md:text-base text-sm font-semibold;
         color: #494949;
         &_text {
           @apply text-xl font-bold;
         }
         &:last-child {
-          @apply mr-20;
+          @apply mr-0 lg:mr-20;
         }
       }
     }
@@ -31,23 +31,26 @@
       border: 2px solid var(--border, #252525);
 
       &_footer {
-        @apply flex w-full justify-between items-center p-6;
+        @apply flex flex-col space-y-4 lg:space-y-0 lg:flex-row w-full justify-between items-center p-6;
         background: var(--material-90, #1d1d1d);
+        &_container{
+          @apply flex justify-between w-full space-x-12 items-center;
+        }
         &_disclaimertext {
-          @apply font-semibold text-lg;
+          @apply font-semibold lg:text-lg text-sm;
           color: #646464;
           span {
             color: #f55571;
           }
         }
         &_buttoncontainer {
-          @apply flex gap-3 items-center text-lg font-semibold;
+          @apply flex gap-3 items-center lg:text-lg text-sm font-semibold;
           &_previous {
             color: #d4d5f9;
             @apply cursor-pointer;
           }
           &_next {
-            @apply cursor-pointer rounded-lg px-4 py-3;
+            @apply cursor-pointer rounded-lg lg:px-4 px-2 py-3;
             color: #101012;
             background: #d4d5f9;
           }
@@ -79,7 +82,7 @@
     }
 
     &_input {
-      @apply bg-inherit rounded-lg px-4 py-3 text-white mt-2 mb-1 outline-none;
+      @apply bg-inherit rounded-lg px-4 w-full py-3 text-white mt-2 mb-1 outline-none;
       border: 1px solid var(--light-text, #646464);
     }
     &_subtext {
@@ -118,7 +121,7 @@
     }
   }
   &_halfcontainer {
-    @apply flex gap-6 w-full;
+    @apply flex md:flex-row flex-col gap-6 w-full;
   }
 }
 .chooseoutcome {
@@ -144,7 +147,7 @@
     }
   }
   &_addbutton {
-    @apply mt-4 rounded-lg cursor-pointer px-4 py-3 text-lg font-semibold w-fit;
+    @apply mt-4 rounded-lg cursor-pointer px-4 py-3 lg:text-lg text-base font-semibold w-fit;
     color: var(--brand-purple, #d4d5f9);
     border: 1px solid var(--brand-purple, #d4d5f9);
   }
@@ -188,7 +191,7 @@
           }
         }
         input {
-          @apply px-4 py-3 rounded-lg text-white outline-none;
+          @apply px-3 py-3 rounded-lg text-white outline-none;
           background: transparent;
         }
       }
@@ -207,7 +210,7 @@
       &_top {
         @apply flex w-full p-6;
         &_left {
-          @apply w-2/12;
+          @apply lg:w-2/12 w-0;
         }
         &_right {
           @apply w-10/12;

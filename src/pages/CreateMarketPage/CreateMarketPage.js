@@ -31,6 +31,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getAccountAddresses } from "../../utils/createMarketFunctions.js";
 import Api from "../../utils/api";
 import { parse } from "url";
+import useScreenSize from "../../utils/useScreenSize";
 
 export default function CreateMarketPage() {
   const { connection } = useConnection();
@@ -99,11 +100,14 @@ export default function CreateMarketPage() {
   const [selectedTab, setSelectedTab] = useState("All");
   const tabsRef = useRef([]);
   const [stepper, setStepper] = useState(0);
+  const screenSize = useScreenSize()
+
+  console.log(screenSize)
   useEffect(() => {
     function setTabPosition() {
       const currentTab = tabsRef.current[activeTabIndex];
-      setTabUnderlineLeft(currentTab?.offsetLeft - 90 ?? 0);
-      setTabUnderlineWidth(currentTab?.clientWidth + 130 ?? 0);
+      setTabUnderlineLeft(screenSize.width < 900 ? currentTab?.offsetLeft - 40 ?? 0 : currentTab?.offsetLeft - 90 ?? 0);
+      setTabUnderlineWidth(screenSize.width < 900 ? currentTab?.clientWidth + 40 ?? 0 : currentTab?.clientWidth + 130 ?? 0);
     }
 
     setTabPosition();
@@ -441,19 +445,21 @@ export default function CreateMarketPage() {
             {tabsData.map((tab, idx) => {
               const isActive = idx === activeTabIndex;
               return (
-                <React.Fragment key={idx}>
+                <React.Fragment className="createmarket_main_container_container" key={idx}>
                   <button
                     ref={(el) => (tabsRef.current[idx] = el)}
-                    className={`pt-2 pb-1 font-bold flex gap-3 ${
-                      isActive ? "active-tab" : ""
-                    }`}
+                    className={`pt-2 pb-1 font-bold flex gap-3 ${isActive ? "active-tab" : ""
+                      }`}
                     onClick={() => {
                       setSelectedTab(tab.label);
                       setActiveTabIndex(idx);
                     }}
                     style={{ whiteSpace: "nowrap" }}
                   >
-                    <span>{`${idx + 1}.  `}</span>
+                    {
+                      screenSize.width > 900 &&
+                      <span>{`${idx + 1}.  `}</span>
+                    }
                     <span>{tab.label}</span>
                   </button>
                   <span
