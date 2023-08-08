@@ -717,18 +717,58 @@ export default function EventPage() {
                   outcomeData.map((outcome, index) => (
                     <div key={index} onClick={() => {
                       setSelectedOutcome(outcome)
-                    }} className={`flex py-6 flex-row justify-between items-center w-full border cursor-pointer bg-[#090909] rounded-lg px-5 ${selectedOutcome?.id === outcome.id ? "border-white" : "border-[#252525]"} `}>
-                      <h2 className="text-white text-lg">{outcome.name}</h2>
-                      <div className="bg-[#101010] p-3 items-center rounded-lg flex flex-col space-y-1 border border-white/20">
-                        <h2 className="text-white text-lg">$0.10</h2>
-                        <h2 className="text-[#646464] text-sm">LP Value </h2>
+                    }} className={`flex py-6 flex-col justify-between w-full border cursor-pointer bg-[#090909] rounded-lg px-5 ${selectedOutcome?.id === outcome.id ? "border-white" : "border-[#252525]"} `}>
+                      <h2 className="text-white text-lg font-semibold">{outcome.name}</h2>
+                      <div className="event_main_right_holdingcontainer_bar">
+                        <div className="event_main_right_holdingcontainer_bar_green"></div>
+                        <div className="event_main_right_holdingcontainer_bar_red"></div>
+                      </div>
+                      <div className="py-2 w-full items-center px-4 text-white mt-6 border border-white/10 rounded-xl bg-[#101010] flex justify-between">
+                        <h3 className="text-lg">Invested</h3>
+                        <h3 className="text-lg">$0.10</h3>
                       </div>
                     </div>
                   ))
                 }
               </div>
             </div>
-            <ToggleBuySell id="buysell" modeBS={modeBS} setModeBS={setModeBS} />
+
+            <div className="event_main_right_holdingcontainer_yesnobuttons">
+              <div
+                className={`event_main_right_holdingcontainer_yesnobuttons_yes ${YesNoActive === "yes" ? "active_yes" : ""
+                  }`}
+                onClick={() => handleButtonClick("yes")}
+              >
+                {" "}
+                <svg
+                  width="6"
+                  height="6"
+                  viewBox="0 0 6 6"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="3" cy="3" r="3" fill="#B6F72B" />
+                </svg>
+                Buy <span>{cardData.yesPrice}</span>
+              </div>
+              <div
+                className={`event_main_right_holdingcontainer_yesnobuttons_no ${YesNoActive === "no" ? "active_no" : ""
+                  }`}
+                onClick={() => handleButtonClick("no")}
+              >
+                {" "}
+                <svg
+                  width="6"
+                  height="6"
+                  viewBox="0 0 6 6"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="3" cy="3" r="3" fill="#EF3F5F" />
+                </svg>
+                Sell <span>{cardData.noPrice}</span>
+              </div>
+            </div>
 
             <div className="event_main_right_holdingcontainer_formcontainer">
               <div className="event_main_right_holdingcontainer_formcontainer_title">

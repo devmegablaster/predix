@@ -220,10 +220,10 @@
           }
         }
         &_yesnobuttons {
-          @apply flex gap-2 mt-2;
+          @apply flex gap-2 mt-2 w-full;
           color: var(--text-grey, #dadada);
           &_yes {
-            @apply flex gap-1.5 justify-center items-center font-semibold px-4 py-3 rounded-lg cursor-pointer;
+            @apply flex gap-1.5 w-full justify-center items-center font-semibold px-4 py-3 rounded-lg cursor-pointer;
             border: 1.5px solid #282828;
             background: #080808;
             span {
@@ -231,7 +231,7 @@
             }
           }
           &_no {
-            @apply flex gap-1.5 justify-center items-center font-semibold px-4 py-3 rounded-lg cursor-pointer;
+            @apply flex gap-1.5 w-full justify-center items-center font-semibold px-4 py-3 rounded-lg cursor-pointer;
             background: #080808;
             border: 1.5px solid #282828;
             span {
