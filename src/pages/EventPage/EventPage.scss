@@ -116,12 +116,14 @@
 
         &_table {
           border-radius: 5px;
-          background: #272727;
+          border: 2px solid #252525;
+          background: #090909;
           color: #828282;
           &_header {
             display: flex;
             padding: 10px;
             font-weight: bold;
+            background: #131416;
             border-bottom: 1px solid black;
             // &_column {
             //   flex: 1;
@@ -143,6 +145,10 @@
           }
           .wallet_column {
             flex-basis: 25%; /* Adjust the width for Wallet Id column */
+          }
+          .index_column {
+            flex-basis: 5%; /* Adjust the width for Index column */
+            padding-left: 5px;
           }
 
           .action_column,

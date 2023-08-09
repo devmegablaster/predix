@@ -622,6 +622,7 @@ export default function EventPage() {
             </div>
             <div className="event_main_left_ordercontainer_table">
               <div className="event_main_left_ordercontainer_table_header">
+                <div className="event_main_left_ordercontainer_table_header_column index_column text-transparent">index</div>
                 <div className="event_main_left_ordercontainer_table_header_column wallet_column">
                   Wallet
                 </div>
@@ -639,11 +640,14 @@ export default function EventPage() {
                 </div>
               </div>
               <div className="event_main_left_ordercontainer_table_body">
-                {orderBookData.map((order) => (
+                {orderBookData.map((order, index) => (
                   <div
-                    className="event_main_left_ordercontainer_table_body_row"
+                    className="event_main_left_ordercontainer_table_body_row border-b border-[#252525]"
                     key={order.txId}
                   >
+                    <div className="event_main_left_ordercontainer_table_body_column index_column">
+                      {index + 1}
+                    </div>
                     <div className="event_main_left_ordercontainer_table_body_column wallet_column">
                       {order.walletId}
                     </div>
