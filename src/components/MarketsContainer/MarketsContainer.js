@@ -248,7 +248,7 @@ export default function MarketsContainer() {
           })}
         </div>
         <div className="markets_main_cardscontainer_cards">
-          {filteredCards.map((card, id) => {
+          {filteredCards.slice(0, 15).map((card, id) => {
             return (
               <Link
                 to={`/event/${card?.marketDetails?.id}`}
