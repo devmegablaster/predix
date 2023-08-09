@@ -257,6 +257,8 @@ export default function MarketsContainer() {
         </div>
         <div className="markets_main_cardscontainer_cards">
           {filteredCards.slice(0, 15).map((card, id) => {
+            card.yesPrice = 20
+            card.noPrice = 10
             return (
               <Link
                 to={`/event/${card?.marketDetails?.id}`}
@@ -289,10 +291,18 @@ export default function MarketsContainer() {
                     </div>
                   </div>
                   <div className="markets_main_cardscontainer_card_content_yesnocontainer">
-                    <div className="markets_main_cardscontainer_card_content_yesnocontainer_yescontainer">
+                    <div className={`markets_main_cardscontainer_card_content_yesnocontainer_yescontainer`}
+                      style={{
+                        width: `${Number.parseInt((card?.yesPrice / (card?.yesPrice + card?.noPrice)) * 100)}%`
+                      }}
+                    >
                       {card?.yesPrice}
                     </div>
-                    <div className="markets_main_cardscontainer_card_content_yesnocontainer_nocontainer">
+                    <div className={`markets_main_cardscontainer_card_content_yesnocontainer_nocontainer`}
+                      style={{
+                        width: `${Number.parseInt((card?.noPrice / (card?.yesPrice + card?.noPrice)) * 100)}%`
+                      }}
+                    >
                       {card?.noPrice}
                     </div>
                   </div>

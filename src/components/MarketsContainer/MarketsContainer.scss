@@ -73,10 +73,10 @@
               background: rgba(182, 247, 43, 0.12);
               color: #B6F72B;
 
-              @apply flex flex-col items-start p-2 text-sm font-semibold w-1/2;
+              @apply flex flex-col items-start p-2 text-sm font-semibold;
             }
             &_nocontainer {
-              @apply flex flex-col items-end p-2 text-sm font-semibold w-1/2;
+              @apply flex flex-col items-end p-2 text-sm font-semibold;
               border-radius: 0px 4px 4px 0px;
               color: #F35077;
               background: rgba(243, 80, 119, 0.12);
