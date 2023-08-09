@@ -44,7 +44,7 @@
   &_main {
     @apply flex flex-col xl:flex-row w-full mt-16 gap-4;
     &_left {
-      @apply flex flex-col gap-4 w-full xl:w-[65%];
+      @apply flex flex-col gap-4 w-full xl:w-65p;
       &_pricecontainer {
         @apply grid gap-4;
         grid-template-columns: repeat(2, minmax(200px, 2fr)) repeat(
@@ -192,7 +192,7 @@
       }
     }
     &_right {
-      @apply flex-col gap-4 w-full xl:w-[35%];
+      @apply flex-col gap-4 w-full xl:w-35p;
       &_holdingcontainer {
         @apply flex flex-col w-full rounded-lg p-6 gap-2;
         background: linear-gradient(
