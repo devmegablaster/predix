@@ -1,15 +1,15 @@
 .event {
   margin-top: 10vh;
-  @apply px-32 py-4 flex w-full flex-col;
+  @apply px-10 xl:px-32 py-4 flex w-full flex-col;
   &_header {
     @apply flex gap-4 mt-8 justify-between w-full;
     &_imagecontainer {
-      @apply w-32 h-32;
+      @apply h-32 w-32;
     }
     &_detailscontainer {
       @apply flex flex-col gap-8;
       &_name {
-        @apply text-white text-4xl font-semibold;
+        @apply text-white xl:text-4xl text-2xl max-w-sm xl:max-w-none font-semibold;
       }
       &_other {
         @apply flex flex-row gap-4;
@@ -42,10 +42,9 @@
     }
   }
   &_main {
-    @apply flex w-full mt-16 gap-4;
+    @apply flex flex-col xl:flex-row w-full mt-16 gap-4;
     &_left {
-      width: 65%;
-      @apply flex flex-col gap-4;
+      @apply flex flex-col gap-4 w-full xl:w-65p;
       &_pricecontainer {
         @apply grid gap-4;
         grid-template-columns: repeat(2, minmax(200px, 2fr)) repeat(
@@ -117,12 +116,14 @@
 
         &_table {
           border-radius: 5px;
-          background: #272727;
+          border: 2px solid #252525;
+          background: #090909;
           color: #828282;
           &_header {
             display: flex;
             padding: 10px;
             font-weight: bold;
+            background: #131416;
             border-bottom: 1px solid black;
             // &_column {
             //   flex: 1;
@@ -144,6 +145,10 @@
           }
           .wallet_column {
             flex-basis: 25%; /* Adjust the width for Wallet Id column */
+          }
+          .index_column {
+            flex-basis: 5%; /* Adjust the width for Index column */
+            padding-left: 5px;
           }
 
           .action_column,
@@ -193,10 +198,14 @@
       }
     }
     &_right {
-      width: 35%;
-      @apply flex-col gap-4;
+      @apply flex-col gap-4 w-full xl:w-35p;
       &_holdingcontainer {
         @apply flex flex-col w-full rounded-lg p-6 gap-2;
+        .selected_card {
+          border: 1.5px solid var(--border, #252525);
+          background: var(--material-90, #1d1d1d);
+          box-shadow: 0px 0px 0px 2px rgba(212, 213, 249, 0.24);
+        }
         background: linear-gradient(
           129deg,
           #131313 0%,
@@ -220,10 +229,10 @@
           }
         }
         &_yesnobuttons {
-          @apply flex gap-2 mt-2;
+          @apply flex gap-2 mt-2 w-full;
           color: var(--text-grey, #dadada);
           &_yes {
-            @apply flex gap-1.5 justify-center items-center font-semibold px-4 py-3 rounded-lg cursor-pointer;
+            @apply flex gap-1.5 w-full justify-center items-center font-semibold px-4 py-3 rounded-lg cursor-pointer;
             border: 1.5px solid #282828;
             background: #080808;
             span {
@@ -231,7 +240,7 @@
             }
           }
           &_no {
-            @apply flex gap-1.5 justify-center items-center font-semibold px-4 py-3 rounded-lg cursor-pointer;
+            @apply flex gap-1.5 w-full justify-center items-center font-semibold px-4 py-3 rounded-lg cursor-pointer;
             background: #080808;
             border: 1.5px solid #282828;
             span {

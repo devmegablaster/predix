@@ -44,9 +44,9 @@
         &_content {
           @apply flex flex-col;
           &_top {
-            @apply p-3 flex gap-4;
+            @apply p-3 flex justify-between;
             &_left {
-              @apply flex flex-col w-9/12;
+              @apply flex flex-col;
               &_tagcontainer {
                 @apply flex justify-between;
                 &_label {
@@ -63,7 +63,7 @@
               }
             }
             &_right{
-                @apply flex w-3/12;
+                @apply flex;
             }
           }
           &_yesnocontainer {
@@ -73,10 +73,10 @@
               background: rgba(182, 247, 43, 0.12);
               color: #B6F72B;
 
-              @apply flex flex-col items-start p-2 text-sm font-semibold w-1/2;
+              @apply flex flex-col items-start p-2 text-sm font-semibold;
             }
             &_nocontainer {
-              @apply flex flex-col items-end p-2 text-sm font-semibold w-1/2;
+              @apply flex flex-col items-end p-2 text-sm font-semibold;
               border-radius: 0px 4px 4px 0px;
               color: #F35077;
               background: rgba(243, 80, 119, 0.12);

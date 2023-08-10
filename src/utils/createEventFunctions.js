@@ -1,6 +1,8 @@
 import { PublicKey } from "@solana/web3.js";
 
 export const getAccountAddresses = (uuid, publicKey, ProgramID) => {
+      console.log("uuid", uuid);
+
   const [eventAccount, eventBump] = PublicKey.findProgramAddressSync(
     [Buffer.from("event"), Buffer.from(uuid)],
     ProgramID

@@ -49,7 +49,9 @@ export default function EventPage() {
   const [modeAR, setModeAR] = useState("add");
   const [modeBS, setModeBS] = useState("buy");
   const [liquidityValue, setLiquidityValue] = useState(0);
+  const [buysellValue, setBuysellValue] = useState(0);
   const [selectedOutcome, setSelectedOutcome] = useState(null);
+  const [selectedOutcomeId, setSelectedOutcomeId] = useState(0);
 
   const { publicKey, sendTransaction } = useWallet();
   const ProgramID = new PublicKey(ProgramIDL.metadata.address);
@@ -57,7 +59,6 @@ export default function EventPage() {
     new AnchorProvider(connection, wallet, {})
   );
   const { eventId } = useParams();
-  console.log(eventId);
   const [eventData, setEventData] = useState({});
   const [outcomeData, setOutcomeData] = useState([]);
 
@@ -70,16 +71,51 @@ export default function EventPage() {
   useEffect(() => {
     fetchEventData();
   }, []);
+  const fetchContractEventData = async (contractID) => {
+
+    const program = new Program(ProgramIDL, ProgramID, provider);
+      const [eventAccount, eventBump] = PublicKey.findProgramAddressSync(
+        [Buffer.from("event"), Buffer.from(contractID)],
+        ProgramID
+      );
+
+    const marketData = await program.account.marketEvent.fetch(eventAccount);
+        const convertedMarketData = {
+          ...marketData,
+          createdAt: marketData.createdAt.toString(),
+          balance: lamportsToAmount(marketData.balance).toString(),
+          expiresAt: marketData.expiresAt.toString(),
+          liquidity: lamportsToAmount(marketData.liquidity).toString(),
+          totalFeeAmount: marketData.totalFeeAmount.toString(),
+          volume: lamportsToAmount(marketData.volume).toString(),
+          availableShares: lamportsToAmount(marketData.availableShares).toString(),
+          availableOutcomeShares: marketData.availableOutcomeShares.map(
+            (value) => lamportsToAmount(value).toString()
+          ),
+          totalOutcomeShares: marketData.totalOutcomeShares.map((value) =>
+            lamportsToAmount(value).toString()
+          ),
+        };
+        console.log("useffect market data", convertedMarketData);
+
+  }; 
   const fetchEventData = async () => {
     try {
       const data = await api.fetchParticularMarket(eventId);
       const outcomeData = await api.fetchParticularMarketOutcome(eventId);
 
-      if (data.success) setEventData(data.data?.marketrestructuredResponse[0]);
-      if (outcomeData.success) setOutcomeData(outcomeData.data?.outcomeInfo);
+      if (data.success){ setEventData(data.data?.marketrestructuredResponse[0]);
+        await fetchContractEventData(
+          data.data?.marketrestructuredResponse[0]?.marketDetails
+            ?.marketContractId
+        );
+      };
+      if (outcomeData.success){ setOutcomeData(outcomeData.data?.outcomeInfo)};
+
       console.log(data.data?.marketrestructuredResponse);
       console.log(data);
     } catch (error) {
+      console.log(error);
       console.log("some error occured");
     }
   };
@@ -96,7 +132,7 @@ export default function EventPage() {
       console.log(marketData, "user");
 
       if (marketData.marketId) {
-        console.log("market ecxisys");
+        console.log("market exists");
         return true;
       }
     } catch (err) {
@@ -132,9 +168,7 @@ export default function EventPage() {
   };
   const onAddRemoveClick = async () => {
     const contractID = eventData?.marketDetails?.marketContractId;
-    console.log(contractID);
-    console.log(publicKey);
-    console.log(ProgramID);
+
     if (contractID && contractID !== "") {
       const {
         eventAccount,
@@ -313,9 +347,9 @@ export default function EventPage() {
               })
               .instruction();
 
-            // let tx = new Transaction().add(ix);
-            // await program.provider.sendAndConfirm(tx);
-            // console.log(tx);
+            let tx = new Transaction().add(ix);
+            await program.provider.sendAndConfirm(tx);
+            console.log(tx);
             const userBalance = await program.account.userWallet.fetch(
               userWalletAddress
             );
@@ -331,113 +365,242 @@ export default function EventPage() {
     }
   };
   const onBuySellClick = async () => {
-    if (!publicKey) throw new WalletNotConnectedError();
-    const contractID = "11";
+    const contractID = eventData?.marketDetails?.marketContractId;
 
-    const {
-      eventAccount,
-      eventBump,
-      adminAddress,
-      adminBump,
-      vaultAddress,
-      vaultBump,
-      userStateAddress,
-      userStateBump,
-      usdcAddress,
-      usdcPublicKey,
-    } = getAccountAddresses(contractID, publicKey, ProgramID);
-    const token_ata = await getAssociatedTokenAddress(
-      usdcPublicKey,
-      publicKey,
-      false,
-      TOKEN_PROGRAM_ID,
-      ASSOCIATED_TOKEN_PROGRAM_ID
-    );
-    const program = new Program(ProgramIDL, ProgramID, provider);
+    if (contractID && contractID !== "") {
+      const {
+        eventAccount,
+        eventBump,
+        vaultAddress,
+        vaultBump,
+        userStateAddress,
+        userStateBump,
+        usdcAddress,
+        usdcPublicKey,
+        userWalletAddress,
+        userVaultAddress,
+        userVaultBump,
+      } = getAccountAddresses(contractID, publicKey, ProgramID);
+      if (!publicKey) throw new WalletNotConnectedError();
+      const token_ata = await getAssociatedTokenAddress(
+        usdcPublicKey,
+        publicKey,
+        false,
+        TOKEN_PROGRAM_ID,
+        ASSOCIATED_TOKEN_PROGRAM_ID
+      );
+      const program = new Program(ProgramIDL, ProgramID, provider);
 
-    console.log("vpda", eventBump);
-    console.log("data_acccount", eventAccount);
-    let marketExists = await checkMarketExists(program, userStateAddress);
-    console.log("me", marketExists);
-    if (modeAR === "add") {
-      try {
-        if (!marketExists) {
-          let ix1 = await program.methods
-            .initialiseUserState("10")
-            .accounts({
-              authority: publicKey,
-              systemProgram: SystemProgram.programId,
-              marketAccount: eventAccount,
-              userMarketShare: userStateAddress,
-            })
-            .instruction();
-          let ix2 = await program.methods
-            .buyOutcomeShare(contractID, new BN(1000000000), "1", vaultBump)
-            .accounts({
-              authority: publicKey,
-              systemProgram: SystemProgram.programId,
-              marketAccount: eventAccount,
-              userMarketShare: userStateAddress,
-              tokenMint: usdcPublicKey,
-              vaultUsdc: vaultAddress,
-              tokenAta: token_ata,
-            })
-            .instruction();
+      console.log("vpda", eventBump);
+      console.log("data_acccount", eventAccount);
+      let marketExists = await checkMarketExists(program, userStateAddress);
+      console.log("me", marketExists);
+      let walletExists = await checkUserWalletExists(
+        program,
+        userWalletAddress
+      );
+      
+      if (BuySellToggle === "buy") {
+        const buyAmount = amountToLamports(buysellValue);
+        try {
+          const liquidityData = {
+            walletAddress: publicKey.toBase58(),
+            amount: parseFloat(liquidityValue),
+            type: "Add",
+            marketDetailsId: eventId,
+          };
+          const res = await api.addLiquidity(liquidityData);
+          if (res.success) {
+            console.log(res.data);
+            const liquidityId = String(res.data.liquidityInfo[0].id);
 
-          let tx = new Transaction().add(ix1).add(ix2);
-          await program.provider.sendAndConfirm(tx);
-          console.log(tx);
-        } else {
-          let ix = await program.methods
-            .addLiquidity(contractID, vaultBump, new BN(1000000000))
-            .accounts({
-              authority: publicKey,
-              systemProgram: SystemProgram.programId,
-              marketAccount: eventAccount,
-              userMarketShare: userStateAddress,
-              tokenMint: usdcPublicKey,
-              vaultUsdc: vaultAddress,
-              tokenAta: token_ata,
-            })
-            .instruction();
+            if (walletExists) {
+              const dm = await program.methods
+                .tokenDeposit(userVaultBump, buyAmount)
+                .accounts({
+                  authority: publicKey,
+                  systemProgram: SystemProgram.programId,
+                  tokenAta: token_ata,
+                  userWallet: userWalletAddress,
+                  userVault: userVaultAddress,
+                  tokenMint: usdcPublicKey,
+                })
+                .instruction();
+              const tx_add = new Transaction().add(dm);
+              const tx_final_add = await provider.sendAndConfirm(tx_add);
+            } else {
+              const id = await program.methods
+                .initializeTokenDeposit(wallet.publicKey)
+                .accounts({
+                  authority: publicKey,
+                  systemProgram: SystemProgram.programId,
+                  userWallet: userWalletAddress,
+                  userVault: userVaultAddress,
+                  tokenMint: usdcPublicKey,
+                })
+                .instruction();
 
-          let tx = new Transaction().add(ix);
-          await program.provider.sendAndConfirm(tx);
-          console.log(tx);
+              const dm = await program.methods
+                .tokenDeposit(userVaultBump, buyAmount)
+                .accounts({
+                  authority: publicKey,
+                  systemProgram: SystemProgram.programId,
+                  tokenAta: token_ata,
+                  userWallet: userWalletAddress,
+                  userVault: userVaultAddress,
+                  tokenMint: usdcPublicKey,
+                })
+                .instruction();
+              const tx_add = new Transaction().add(id).add(dm);
+              const tx_final_add = await provider.sendAndConfirm(tx_add);
+            }
+            if (!marketExists) {
+              let ix1 = await program.methods
+                .initialiseUserState(contractID)
+                .accounts({
+                  authority: publicKey,
+                  systemProgram: SystemProgram.programId,
+                  marketAccount: eventAccount,
+                  userMarketShare: userStateAddress,
+                })
+                .instruction();
+              let ix2 = await program.methods
+                .buyOutcomeShare(
+                  contractID,
+                  buyAmount,
+                  selectedOutcomeId,
+                  vaultBump,
+                  userVaultBump
+                )
+                .accounts({
+                  authority: publicKey,
+                  systemProgram: SystemProgram.programId,
+                  marketAccount: eventAccount,
+                  userMarketShare: userStateAddress,
+                  tokenMint: usdcPublicKey,
+                  vaultUsdc: vaultAddress,
+                  userWallet: userWalletAddress,
+                  userVault: userVaultAddress,
+                  tokenAta: token_ata,
+                })
+                .instruction();
+
+              let tx = new Transaction().add(ix1).add(ix2);
+              await program.provider.sendAndConfirm(tx);
+              console.log(tx);
+              if (tx) {
+                const activateLiquidity = await api.activateLiquidity(
+                  liquidityId
+                );
+                console.log(activateLiquidity);
+              }
+            } else {
+              let ix = await program.methods
+                .buyOutcomeShare(
+                  contractID,
+                  buyAmount,
+                  selectedOutcomeId,
+                  vaultBump,
+                  userVaultBump,
+                  
+                )
+                .accounts({
+                  authority: publicKey,
+                  systemProgram: SystemProgram.programId,
+                  marketAccount: eventAccount,
+                  userMarketShare: userStateAddress,
+                  tokenMint: usdcPublicKey,
+                  vaultUsdc: vaultAddress,
+                  userWallet: userWalletAddress,
+                  userVault: userVaultAddress,
+                  tokenAta: token_ata,
+                })
+                .instruction();
+
+              let tx = new Transaction().add(ix);
+              await program.provider.sendAndConfirm(tx);
+              console.log(tx);
+              if (tx) {
+                const activateLiquidity = await api.activateLiquidity(
+                  liquidityId
+                );
+                console.log(activateLiquidity);
+              }
+            }
+          }
+        } catch (err) {
+          console.log(err);
         }
-      } catch (err) {
-        console.log(err);
-      }
-    } else {
-      try {
-        if (!marketExists) {
-          console.log("There is no liquidity added!");
-        } else {
-          let ix = await program.methods
-            .removeLiquidity(contractID, vaultBump, new BN(1000000000))
-            .accounts({
-              authority: publicKey,
-              systemProgram: SystemProgram.programId,
-              marketAccount: eventAccount,
-              userMarketShare: userStateAddress,
-              tokenMint: usdcPublicKey,
-              vaultUsdc: vaultAddress,
-              tokenAta: token_ata,
-            })
-            .instruction();
+      } else {
+         const sellAmount = amountToLamports(buysellValue);
+       
+        try {
+          if (!marketExists) {
+            console.log("There are no shares bought!");
+            const userBalance =
+              await program.account.userWallet.fetch(
+                userWalletAddress
+              );
+            console.log(
+              lamportsToAmount(userBalance.balance).toString()
+            );
+          } else {
+            let ix = await program.methods
+              .sellOutcomeShare(
+                contractID,
+                sellAmount,
+                selectedOutcomeId,
+                vaultBump,
+                userVaultBump
+              )
+              .accounts({
+                authority: publicKey,
+                systemProgram: SystemProgram.programId,
+                marketAccount: eventAccount,
+                userMarketShare: userStateAddress,
+                tokenMint: usdcPublicKey,
+                vaultUsdc: vaultAddress,
+                tokenAta: token_ata,
+                userWallet: userWalletAddress,
+                userVault: userVaultAddress,
+              })
+              .instruction();
 
-          let tx = new Transaction().add(ix);
-          await program.provider.sendAndConfirm(tx);
-          console.log(tx);
+            let tx = new Transaction().add(ix);
+            await program.provider.sendAndConfirm(tx);
+            console.log(tx);
+            const userBalance = await program.account.userWallet.fetch(
+              userWalletAddress
+            );
+            console.log(lamportsToAmount(userBalance.balance).toString());
+          }
+        } catch (err) {
+          console.log(err);
         }
-      } catch (err) {
-        console.log(err);
       }
-    }
 
-    const marketData = await program.account.marketEvent.fetch(eventAccount);
-    console.log(marketData);
+      const marketData = await program.account.marketEvent.fetch(eventAccount);
+        const convertedMarketData = {
+          ...marketData,
+          createdAt: marketData.createdAt.toString(),
+          balance: lamportsToAmount(marketData.balance).toString(),
+          expiresAt: marketData.expiresAt.toString(),
+          liquidity: lamportsToAmount(marketData.liquidity).toString(),
+          totalFeeAmount: marketData.totalFeeAmount.toString(),
+          volume: lamportsToAmount(marketData.volume).toString(),
+          availableShares: lamportsToAmount(
+            marketData.availableShares
+          ).toString(),
+          availableOutcomeShares: marketData.availableOutcomeShares.map(
+            (value) => lamportsToAmount(value).toString()
+          ),
+          totalOutcomeShares: marketData.totalOutcomeShares.map((value) =>
+            lamportsToAmount(value).toString()
+          ),
+        };
+        console.log("useffect market data", convertedMarketData);    }
   };
+
   useEffect(() => {
     if (wallet) {
       const provider = new AnchorProvider(connection, wallet, {});
@@ -527,10 +690,10 @@ export default function EventPage() {
       txId: "0x90123456789abcdef",
     },
   ];
-  const [YesNoActive, setYesNoActive] = useState("yes");
+  const [BuySellToggle, setBuySellToggle] = useState("buy");
 
   const handleButtonClick = (button) => {
-    setYesNoActive(button);
+    setBuySellToggle(button);
   };
   const [showMore, setShowMore] = useState(false);
 
@@ -545,7 +708,7 @@ export default function EventPage() {
       <div className="event_header">
         <div className="flex w-full gap-4">
           <div className="event_header_imagecontainer">
-            <img className="w-32 h-32" src={Object.keys(eventData).length > 0 ? eventData?.marketDetails?.imageURL !== "image" ? "https://ipfs.io/ipfs/" + eventData?.marketDetails?.imageURL : cardData.icon : cardData.icon} alt="event" />
+            <img className="w-32 h-32 object-cover" src={Object.keys(eventData)?.length > 0 ? eventData?.marketDetails?.imageURL !== "image" ? "https://ipfs.io/ipfs/" + eventData?.marketDetails?.imageURL : cardData.icon : cardData.icon} alt="event" />
           </div>
           <div className="event_header_detailscontainer">
             <div className="event_header_detailscontainer_name">
@@ -622,6 +785,9 @@ export default function EventPage() {
             </div>
             <div className="event_main_left_ordercontainer_table">
               <div className="event_main_left_ordercontainer_table_header">
+                <div className="event_main_left_ordercontainer_table_header_column index_column text-transparent">
+                  index
+                </div>
                 <div className="event_main_left_ordercontainer_table_header_column wallet_column">
                   Wallet
                 </div>
@@ -639,11 +805,14 @@ export default function EventPage() {
                 </div>
               </div>
               <div className="event_main_left_ordercontainer_table_body">
-                {orderBookData.map((order) => (
+                {orderBookData.map((order, index) => (
                   <div
-                    className="event_main_left_ordercontainer_table_body_row"
+                    className="event_main_left_ordercontainer_table_body_row border-b border-[#252525]"
                     key={order.txId}
                   >
+                    <div className="event_main_left_ordercontainer_table_body_column index_column">
+                      {index + 1}
+                    </div>
                     <div className="event_main_left_ordercontainer_table_body_column wallet_column">
                       {order.walletId}
                     </div>
@@ -669,8 +838,9 @@ export default function EventPage() {
               <span>About this market</span>
             </div>
             <div
-              className={`event_main_left_aboutcontainer_expand ${showMore ? "expanded" : ""
-                }`}
+              className={`event_main_left_aboutcontainer_expand ${
+                showMore ? "expanded" : ""
+              }`}
             >
               <div className="event_main_left_aboutcontainer_description">
                 This market will resolve to 'YES' if DeGods NFT floor price is
@@ -711,34 +881,94 @@ export default function EventPage() {
               Manage Holding
             </div>
             <div className="h-full flex flex-col w-full space-y-2">
-              <h2 className="py-2 text-white text-lg font-semibold">Choose Outcome</h2>
+              <h2 className="py-2 text-white text-lg font-semibold">
+                Choose Outcome
+              </h2>
               <div className="w-full h-48 overflow-y-scroll p-2 flex flex-col space-y-2">
-                {
-                  outcomeData.map((outcome, index) => (
-                    <div key={index} onClick={() => {
-                      setSelectedOutcome(outcome)
-                    }} className={`flex py-6 flex-row justify-between items-center w-full border cursor-pointer bg-[#090909] rounded-lg px-5 ${selectedOutcome?.id === outcome.id ? "border-white" : "border-[#252525]"} `}>
-                      <h2 className="text-white text-lg">{outcome.name}</h2>
-                      <div className="bg-[#101010] p-3 items-center rounded-lg flex flex-col space-y-1 border border-white/20">
-                        <h2 className="text-white text-lg">$0.10</h2>
-                        <h2 className="text-[#646464] text-sm">LP Value </h2>
-                      </div>
+                {outcomeData.map((outcome, index) => (
+                  <div
+                    key={index}
+                    onClick={() => {
+                      setSelectedOutcome(outcome);
+                      setSelectedOutcomeId(index)
+                      console.log(outcome);
+                    }}
+                    className={`flex py-6 flex-col justify-between w-full border cursor-pointer bg-[#090909] rounded-lg px-5 ${
+                      selectedOutcome?.id === outcome.id
+                        ? "selected_card"
+                        : "border-[#252525]"
+                    } `}
+                  >
+                    <h2 className="text-white text-lg font-semibold">
+                      {outcome.name}
+                    </h2>
+                    <div className="event_main_right_holdingcontainer_bar">
+                      <div className="event_main_right_holdingcontainer_bar_green"></div>
+                      <div className="event_main_right_holdingcontainer_bar_red"></div>
                     </div>
-                  ))
-                }
+                    <div className="py-2 w-full items-center px-4 text-white mt-6 border border-white/10 rounded-xl bg-[#101010] flex justify-between">
+                      <h3 className="text-lg">Invested</h3>
+                      <h3 className="text-lg">$0.10</h3>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-            <ToggleBuySell id="buysell" modeBS={modeBS} setModeBS={setModeBS} />
+
+            <div className="event_main_right_holdingcontainer_yesnobuttons">
+              <div
+                className={`event_main_right_holdingcontainer_yesnobuttons_yes ${
+                  BuySellToggle === "buy" ? "active_yes" : ""
+                }`}
+                onClick={() => handleButtonClick("buy")}
+              >
+                {" "}
+                <svg
+                  width="6"
+                  height="6"
+                  viewBox="0 0 6 6"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="3" cy="3" r="3" fill="#B6F72B" />
+                </svg>
+                Buy <span>{cardData.yesPrice}</span>
+              </div>
+              <div
+                className={`event_main_right_holdingcontainer_yesnobuttons_no ${
+                  BuySellToggle === "sell" ? "active_no" : ""
+                }`}
+                onClick={() => handleButtonClick("sell")}
+              >
+                {" "}
+                <svg
+                  width="6"
+                  height="6"
+                  viewBox="0 0 6 6"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="3" cy="3" r="3" fill="#EF3F5F" />
+                </svg>
+                Sell <span>{cardData.noPrice}</span>
+              </div>
+            </div>
 
             <div className="event_main_right_holdingcontainer_formcontainer">
               <div className="event_main_right_holdingcontainer_formcontainer_title">
                 Amount in USD
               </div>
-              <input className="event_main_right_holdingcontainer_formcontainer_input" />
+              <input
+                value={buysellValue}
+                onChange={(e) => {
+                  setBuysellValue(e.target.value);
+                }}
+                className="event_main_right_holdingcontainer_formcontainer_input"
+              />
               <div className="event_main_right_holdingcontainer_formcontainer_value">
                 Sol: <span>0.0000</span> <span>0.000000</span> shares(approx.)
               </div>
-              {modeBS === "buy" ? (
+              {BuySellToggle === "buy" ? (
                 <div
                   onClick={onBuySellClick}
                   className="event_main_right_holdingcontainer_formcontainer_buybutton"

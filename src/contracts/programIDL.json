@@ -709,7 +709,17 @@
           "isSigner": false
         },
         {
+          "name": "userWallet",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "vaultUsdc",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userVault",
           "isMut": true,
           "isSigner": false
         },
@@ -735,6 +745,14 @@
         },
         {
           "name": "outcomeShareIndex",
+          "type": "u8"
+        },
+        {
+          "name": "vaultBump",
+          "type": "u8"
+        },
+        {
+          "name": "userVaultBump",
           "type": "u8"
         }
       ]

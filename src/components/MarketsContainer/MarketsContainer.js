@@ -197,6 +197,14 @@ export default function MarketsContainer() {
       console.log("some error occured");
     }
   };
+
+  const truncateString = (str, num) => {
+    if (str?.length <= num) {
+      return str;
+    }
+    return str?.slice(0, num) + "...";
+  };
+
   return (
     <>
       <div className="markets_main_header">
@@ -249,6 +257,8 @@ export default function MarketsContainer() {
         </div>
         <div className="markets_main_cardscontainer_cards">
           {filteredCards.map((card, id) => {
+            card.yesPrice = 20
+            card.noPrice = 10
             return (
               <Link
                 to={`/event/${card?.marketDetails?.id}`}
@@ -262,29 +272,37 @@ export default function MarketsContainer() {
                           <img src={TagPurple} alt="tag" />
                           {card?.category?.name}
                         </div>
-                        <img
-                          className="w-5"
-                          src={BookmarkEmpty}
-                          alt="Empty Bookmark"
-                        />
                       </div>
-                      <div className="markets_main_cardscontainer_card_content_top_left_namecontainer">
-                        {card?.marketDetails?.description}
+                      <div className="markets_main_cardscontainer_card_content_top_left_namecontainer max-w-[150px] 2xl:max-w-[280px]">
+                        {truncateString(card?.marketDetails?.description, 50)}
                       </div>
                     </div>
                     <div className="markets_main_cardscontainer_card_content_top_right">
                       <img
-                        className="w-full rounded-xl object-cover h-32"
+                        className="w-5 self-start mr-1 mt-2"
+                        src={BookmarkEmpty}
+                        alt="Empty Bookmark"
+                      />
+                      <img
+                        className="w-32 rounded-xl object-cover h-32"
                         src={card.marketDetails.imageURL !== "image" ? "https://ipfs.io/ipfs/" + card.marketDetails.imageURL : EventImage}
                         alt="eventImage"
                       />
                     </div>
                   </div>
                   <div className="markets_main_cardscontainer_card_content_yesnocontainer">
-                    <div className="markets_main_cardscontainer_card_content_yesnocontainer_yescontainer">
+                    <div className={`markets_main_cardscontainer_card_content_yesnocontainer_yescontainer`}
+                      style={{
+                        width: `${Number.parseInt((card?.yesPrice / (card?.yesPrice + card?.noPrice)) * 100)}%`
+                      }}
+                    >
                       {card?.yesPrice}
                     </div>
-                    <div className="markets_main_cardscontainer_card_content_yesnocontainer_nocontainer">
+                    <div className={`markets_main_cardscontainer_card_content_yesnocontainer_nocontainer`}
+                      style={{
+                        width: `${Number.parseInt((card?.noPrice / (card?.yesPrice + card?.noPrice)) * 100)}%`
+                      }}
+                    >
                       {card?.noPrice}
                     </div>
                   </div>
