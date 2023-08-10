@@ -104,7 +104,7 @@ export default function FundingInformation({ inputData, setInputData }) {
         <div className="fundinginfo_preview_card">
           <div className="fundinginfo_preview_card_top">
             <div className="fundinginfo_preview_card_top_left">
-              <img src={URL.createObjectURL(inputData.imageFile)} className="w-32 h-32 rounded-lg object-cover" alt="preview" />
+              {/* <img src={URL.createObjectURL(inputData?.imageFile)} className="w-32 h-32 rounded-lg object-cover" alt="preview" /> */}
             </div>
             <div className="fundinginfo_preview_card_top_right">
               <div className="fundinginfo_preview_card_top_right_title">
