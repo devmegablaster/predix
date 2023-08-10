@@ -256,7 +256,7 @@ export default function MarketsContainer() {
           })}
         </div>
         <div className="markets_main_cardscontainer_cards">
-          {filteredCards.slice(0, 15).map((card, id) => {
+          {filteredCards.map((card, id) => {
             card.yesPrice = 20
             card.noPrice = 10
             return (
