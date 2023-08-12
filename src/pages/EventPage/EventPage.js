@@ -50,7 +50,6 @@ export default function EventPage() {
   const [modeBS, setModeBS] = useState("buy");
   const [liquidityValue, setLiquidityValue] = useState(0);
   const [buysellValue, setBuysellValue] = useState(0);
-  const [selectedOutcome, setSelectedOutcome] = useState(null);
   const [selectedOutcomeId, setSelectedOutcomeId] = useState(0);
 
   const { publicKey, sendTransaction } = useWallet();
@@ -61,6 +60,12 @@ export default function EventPage() {
   const { eventId } = useParams();
   const [eventData, setEventData] = useState({});
   const [outcomeData, setOutcomeData] = useState([]);
+
+  useEffect(() => {
+    if (outcomeData.length > 0) {
+      setSelectedOutcomeId(outcomeData[0].id);
+    }
+  }, [outcomeData])
 
   useEffect(() => {
     if (wallet) {
@@ -851,11 +856,10 @@ export default function EventPage() {
                   <div
                     key={index}
                     onClick={() => {
-                      setSelectedOutcome(outcome);
                       setSelectedOutcomeId(index)
                       console.log(outcome);
                     }}
-                    className={`flex py-6 flex-col justify-between w-full border cursor-pointer bg-[#090909] rounded-lg px-5 ${selectedOutcome?.id === outcome.id
+                    className={`flex py-6 flex-col justify-between w-full border cursor-pointer bg-[#090909] rounded-lg px-5 ${selectedOutcomeId === outcome.id
                       ? "selected_card"
                       : "border-[#252525]"
                       } `}
@@ -863,10 +867,6 @@ export default function EventPage() {
                     <h2 className="text-white text-lg font-semibold">
                       {outcome.name}
                     </h2>
-                    <div className="event_main_right_holdingcontainer_bar">
-                      <div className="event_main_right_holdingcontainer_bar_green"></div>
-                      <div className="event_main_right_holdingcontainer_bar_red"></div>
-                    </div>
                     <div className="py-2 w-full items-center px-4 text-white mt-6 border border-white/10 rounded-xl bg-[#101010] flex justify-between">
                       <h3 className="text-lg">Invested</h3>
                       <h3 className="text-lg">$0.10</h3>

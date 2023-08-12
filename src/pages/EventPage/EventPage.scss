@@ -116,6 +116,8 @@
 
         &_table {
           border-radius: 5px;
+          max-height: 500px;
+          overflow-y: scroll;
           border: 2px solid #252525;
           background: #090909;
           color: #828282;
