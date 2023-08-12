@@ -29,7 +29,7 @@ export default function Deposit() {
           })}
         </div>
         <div className="w-full h-1 bg-[#646464] rounded-xl" />
-        <div className="flex justify-between items-center bg-[#1D1D1D] px-2 py-3 rounded-lg">
+        <div className="flex justify-between items-center bg-[#1D1D1D] px-3 py-3 rounded-lg">
           <div className="flex space-x-2 items-start">
             <img src="/crypto.png" />
             <div className="flex flex-col justify-between">

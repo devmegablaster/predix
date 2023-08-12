@@ -1,6 +1,7 @@
 import { Modal, SegmentedControl } from "@mantine/core";
 import { useState } from "react";
 import Deposit from "./Deposit";
+import Sell from "./Sell";
 
 export default function Index({ opened, setOpened }) {
   const [value, setValue] = useState('deposit');
@@ -22,6 +23,9 @@ export default function Index({ opened, setOpened }) {
         />
         {
           value === "deposit" && <Deposit />
+        }
+        {
+          value === "sell" && <Sell />
         }
       </div>
     </Modal>
