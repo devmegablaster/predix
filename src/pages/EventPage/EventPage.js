@@ -41,6 +41,31 @@ import Api from "../../utils/api";
 // buy_outcome_share;
 // close_market_with_admin;
 
+const calculateSharePrice = (market_details) => {
+  const index = market_details.totalOutcomes;
+
+  const prod_price_weights = market_details.availableOutcomeShares
+    .slice(0, index)
+    .map((value) => value / 1_000_000.0)
+    .reduce((product, value) => product * value, 1);
+
+  const weights = new Array(10).fill(0.0);
+
+  for (let i = 0; i < index; i++) {
+    weights[i] = prod_price_weights / (market_details.availableOutcomeShares[i] / 1_000_000.0);
+  }
+
+  const sum_price_weights = weights.slice(0, index).reduce((sum, value) => sum + value, 0);
+
+  const prices = new Array(10).fill(0);
+
+  for (let i = 0; i < index; i++) {
+    prices[i] = Math.round((weights[i] / sum_price_weights * 1_000_000.0));
+  }
+
+  return prices;
+};
+
 export default function EventPage() {
   const api = new Api();
 
@@ -60,12 +85,14 @@ export default function EventPage() {
   const { eventId } = useParams();
   const [eventData, setEventData] = useState({});
   const [outcomeData, setOutcomeData] = useState([]);
+  const [contractEventData, setContractEventData] = useState({});
+  const [sharePrice, setSharePrice] = useState([]);
 
   useEffect(() => {
-    if (outcomeData.length > 0) {
-      setSelectedOutcomeId(outcomeData[0].id);
+    if (Object.keys(contractEventData).length) {
+      setSharePrice(calculateSharePrice(contractEventData))
     }
-  }, [outcomeData])
+  }, [contractEventData])
 
   useEffect(() => {
     if (wallet) {
@@ -102,6 +129,8 @@ export default function EventPage() {
       ),
     };
     console.log("useffect market data", convertedMarketData);
+
+    setContractEventData(convertedMarketData);
 
   };
   const fetchEventData = async () => {
@@ -859,7 +888,7 @@ export default function EventPage() {
                       setSelectedOutcomeId(index)
                       console.log(outcome);
                     }}
-                    className={`flex py-6 flex-col justify-between w-full border cursor-pointer bg-[#090909] rounded-lg px-5 ${selectedOutcomeId === outcome.id
+                    className={`flex py-6 flex-col justify-between w-full border cursor-pointer bg-[#090909] rounded-lg px-5 ${selectedOutcomeId === index
                       ? "selected_card"
                       : "border-[#252525]"
                       } `}
@@ -925,7 +954,7 @@ export default function EventPage() {
                 className="event_main_right_holdingcontainer_formcontainer_input"
               />
               <div className="event_main_right_holdingcontainer_formcontainer_value">
-                Sol: <span>0.0000</span> <span>0.000000</span> shares(approx.)
+                Sol: <span>0.0000</span> <span>{sharePrice[selectedOutcomeId] || "0.00000"}</span> shares(approx.)
               </div>
               {BuySellToggle === "buy" ? (
                 <div

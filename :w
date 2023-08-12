@@ -1,0 +1,13 @@
+import { Modal } from "@mantine/core";
+import { useState } from "react";
+
+export default function Index() {
+  const [opened, setOpened] = useState(false);
+  return (
+    <Modal title={"Manage Balances"} classNames={{ root: "bg-black border border-[#252525]" }} opened={opened} withCloseButton onClose={() => {
+      setOpened(false);
+    }}>
+      Modal Content
+    </Modal>
+  );
+}

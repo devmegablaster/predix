@@ -32,6 +32,7 @@
       }
     }
     &_createbutton {
+      color: black;
       @apply rounded-md px-3 py-2 items-center font-medium text-sm cursor-pointer;
       background: var(--brand-purple, #d4d5f9);
     }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./LandingPage.scss";
+import Modal from "../../components/Modal";
 import Navbar from "../../components/Navbar/Navbar";
 import LandingBanner from "../../assets/LandingBanner.png";
 import FundIcon from "../../assets/fund.svg";
@@ -64,12 +65,13 @@ export default function LandingPage() {
     },
   ];
 
-
+  const [opened, setOpened] = useState(false);
 
   return (
     <article className="landing">
       <Navbar />
       <section className="landing_main">
+        <Modal opened={opened} setOpened={setOpened} />
         <img
           src={LandingBanner}
           className="landing_main_banner"
@@ -80,7 +82,7 @@ export default function LandingPage() {
             <div className="landing_main_content_markets_title">
               Trending Markets
             </div>
-            <MarketsContainer/>
+            <MarketsContainer />
             <Link
               to="/markets"
               className="landing_main_content_markets_allbutton"
@@ -170,6 +172,7 @@ export default function LandingPage() {
               </Link>
               <Link
                 to="/"
+                onClick={() => setOpened(true)}
                 className="landing_main_content_footer_middle_subtext"
               >
                 Funds

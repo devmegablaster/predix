@@ -8,6 +8,7 @@ import SettingsPage from "./pages/SettingsPage/SettingsPage";
 import UserStatisticsPage from "./pages/UserStatisticsPage/UserStatisticsPage";
 import CreateMarketPage from "./pages/CreateMarketPage/CreateMarketPage";
 import LandingPage from "./pages/LandingPage/LandingPage";
+
 function App() {
   return (
     <Routes>
@@ -16,7 +17,7 @@ function App() {
       <Route path="/event/:eventId" element={<EventPage />} />
       <Route path="/leaderboard" element={<LeaderboardPage />} />
       <Route path="/settings" element={<SettingsPage />} />
-      <Route path="/userstatistics/:userid" element={<UserStatisticsPage/>} />
+      <Route path="/userstatistics/:userid" element={<UserStatisticsPage />} />
       <Route path="/create" element={<CreateMarketPage />} />
 
     </Routes>

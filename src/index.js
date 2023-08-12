@@ -6,16 +6,19 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { SolanaWallet } from "./SolanaWallet";
 import { SnackbarProvider } from "notistack";
+import { MantineProvider } from "@mantine/core";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <SnackbarProvider maxSnack={1}>
-    <SolanaWallet>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </SolanaWallet>
-  </SnackbarProvider>
+  <MantineProvider withGlobalStyles withNormalizeCSS theme={{ colorScheme: "dark" }}>
+    <SnackbarProvider maxSnack={1}>
+      <SolanaWallet>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </SolanaWallet>
+    </SnackbarProvider>
+  </MantineProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
