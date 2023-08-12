@@ -769,9 +769,6 @@ export default function EventPage() {
                 <div className="event_main_left_ordercontainer_table_header_column quantity_column">
                   Quantity
                 </div>
-                <div className="event_main_left_ordercontainer_table_header_column tx_column">
-                  TX ID
-                </div>
               </div>
               <div className="event_main_left_ordercontainer_table_body">
                 {orderBookData.map((order, index) => (
@@ -793,9 +790,6 @@ export default function EventPage() {
                     </div>
                     <div className="event_main_left_ordercontainer_table_body_column quantity_column">
                       {order.quantity}
-                    </div>
-                    <div className="event_main_left_ordercontainer_table_body_column tx_column">
-                      {order.txId}
                     </div>
                   </div>
                 ))}
