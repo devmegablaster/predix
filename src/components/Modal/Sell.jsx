@@ -2,7 +2,7 @@ import { Slider } from "@mantine/core"
 import { useState } from "react"
 
 export default function Sell() {
-  const [amount, setAmount] = useState("Amount")
+  const [amount, setAmount] = useState(0)
   return (
     <div className="h-full w-full flex flex-col space-y-3">
       <div className="w-full h-full flex flex-col space-y-2 border border-[#333333] rounded-lg p-2">
@@ -24,10 +24,12 @@ export default function Sell() {
           <p className="text-sm">1 stl = 23.454 USDC</p>
         </div>
         <div className="w-full h-1 bg-[#646464] rounded-xl" />
-        <div className="py-20 w-full text-3xl bg-[#1D1D1D] rounded-lg text-[#646464] text-center">
-          {amount}
+        <div className="py-20 w-full text-3xl bg-[#1D1D1D] rounded-lg font-semibold text-[#646464] text-center">
+          {parseFloat(amount / 100 * 10).toPrecision(3)}
         </div>
-        <Slider className="w-[95%] pb-5 mx-auto" color="gray" marks={[
+        <Slider value={amount} onChange={(e) => {
+          setAmount(e)
+        }} className="w-[95%] pb-5 mx-auto" color="gray" marks={[
           { value: 0, label: "0" },
           { value: 25, label: "25%" },
           { value: 50, label: "50%" },
