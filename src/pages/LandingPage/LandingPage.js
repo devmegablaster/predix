@@ -65,13 +65,13 @@ export default function LandingPage() {
     },
   ];
 
-  const [opened, setOpened] = useState(false);
+  const [fundsModalOpen, setFundsModalOpen] = useState(false);
 
   return (
     <article className="landing">
       <Navbar />
       <section className="landing_main">
-        <Modal opened={opened} setOpened={setOpened} />
+        <Modal fundsModalOpen={fundsModalOpen} setFundsModalOpen={setFundsModalOpen} />
         <img
           src={LandingBanner}
           className="landing_main_banner"
@@ -172,7 +172,7 @@ export default function LandingPage() {
               </Link>
               <Link
                 to="/"
-                onClick={() => setOpened(true)}
+                onClick={() => setFundsModalOpen(true)}
                 className="landing_main_content_footer_middle_subtext"
               >
                 Funds

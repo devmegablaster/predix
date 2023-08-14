@@ -46,8 +46,11 @@ const calculateSharePrice = (market_details) => {
 
   const prod_price_weights = market_details.availableOutcomeShares
     .slice(0, index)
-    .map((value) => value / 1_000_000.0)
+    .map((value) => Number(value) / 1000000.0)
     .reduce((product, value) => product * value, 1);
+
+  console.log("total", index);
+  console.log("price weights", prod_price_weights);
 
   const weights = new Array(10).fill(0.0);
 
@@ -954,7 +957,7 @@ export default function EventPage() {
                 className="event_main_right_holdingcontainer_formcontainer_input"
               />
               <div className="event_main_right_holdingcontainer_formcontainer_value">
-                Sol: <span>0.0000</span> <span>{sharePrice[selectedOutcomeId] || "0.00000"}</span> shares(approx.)
+                Available Shares: <span>{sharePrice[selectedOutcomeId] || "0.00000"}</span>
               </div>
               {BuySellToggle === "buy" ? (
                 <div
