@@ -122,12 +122,14 @@
           border: 2px solid #252525;
           background: #090909;
           color: #828282;
+          @apply relative;
           &_header {
             display: flex;
             padding: 10px;
             font-weight: bold;
             background: #131416;
             border-bottom: 1px solid black;
+            @apply w-full sticky top-0;
             // &_column {
             //   flex: 1;
             // }
