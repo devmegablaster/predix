@@ -284,7 +284,7 @@ export default function MarketsContainer() {
                         alt="Empty Bookmark"
                       />
                       <img
-                        className="w-32 rounded-xl object-cover h-32"
+                        className="h-32 w-32 rounded-xl object-cover"
                         src={card.marketDetails.imageURL !== "image" ? "https://ipfs.io/ipfs/" + card.marketDetails.imageURL : EventImage}
                         alt="eventImage"
                       />

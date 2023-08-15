@@ -32,17 +32,17 @@
       }
       &_cards {
         grid-gap: 25px;
-        @apply mt-8 grid lg:grid-cols-3 grid-cols-1 md:grid-cols-2;
+        @apply mt-8 grid xl:grid-cols-3 grid-cols-1 md:grid-cols-2;
       }
       &_card {
-        @apply flex flex-col rounded-lg cursor-pointer;
+        @apply flex flex-col rounded-lg cursor-pointer justify-between;
         // max-width: 400px;
         border: 1px solid var(--border-1, #222);
         background: #0a0a0a;
         box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.02),
           0px 3px 6px 0px rgba(0, 0, 0, 0.02);
         &_content {
-          @apply flex flex-col;
+          @apply flex flex-col justify-between h-full;
           &_top {
             @apply p-3 flex justify-between;
             &_left {
