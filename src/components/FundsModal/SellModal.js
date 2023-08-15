@@ -19,7 +19,8 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { getAccountAddresses } from "../../utils/fundsFunctions.js";
-export default function Sell() {
+
+export default function SellModal() {
   const [amount, setAmount] = useState(0);
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
@@ -134,7 +135,7 @@ export default function Sell() {
     }
     fetchUserBalance(provider);
   };
-  
+
   return (
     <div className="h-full w-full flex flex-col space-y-3">
       <div className="w-full h-full flex flex-col space-y-2 border border-[#333333] rounded-lg p-2">

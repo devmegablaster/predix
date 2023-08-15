@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./LandingPage.scss";
-import Modal from "../../components/Modal";
 import Navbar from "../../components/Navbar/Navbar";
 import LandingBanner from "../../assets/LandingBanner.png";
 import FundIcon from "../../assets/fund.svg";
@@ -65,13 +64,10 @@ export default function LandingPage() {
     },
   ];
 
-  const [fundsModalOpen, setFundsModalOpen] = useState(false);
-
   return (
     <article className="landing">
       <Navbar />
       <section className="landing_main">
-        <Modal fundsModalOpen={fundsModalOpen} setFundsModalOpen={setFundsModalOpen} />
         <img
           src={LandingBanner}
           className="landing_main_banner"
@@ -172,7 +168,6 @@ export default function LandingPage() {
               </Link>
               <Link
                 to="/"
-                onClick={() => setFundsModalOpen(true)}
                 className="landing_main_content_footer_middle_subtext"
               >
                 Funds
