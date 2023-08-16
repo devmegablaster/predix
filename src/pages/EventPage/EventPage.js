@@ -991,7 +991,7 @@ export default function EventPage() {
                 className="event_main_right_holdingcontainer_formcontainer_input"
               />
               <div className="event_main_right_holdingcontainer_formcontainer_value">
-                Available Shares: <span>{contractEventData.availableOutcomeShares[selectedOutcomeId] || "0.00000"}</span>
+                Available Shares: <span>{contractEventData.availableOutcomeShares ? contractEventData.availableOutcomeShares[selectedOutcomeId] : "0.00000"}</span>
               </div>
               {BuySellToggle === "buy" ? (
                 <div
