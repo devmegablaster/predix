@@ -727,77 +727,7 @@ export default function EventPage() {
       outcome: "Yes",
       quantity: 8,
       txId: "0x90123456789abcdef",
-    },
-    {
-      walletId: "0xabcdef123456",
-      action: "Buy",
-      outcome: "Yes",
-      quantity: 5,
-      txId: "0x0123456789abcdef",
-    },
-    {
-      walletId: "0x0123456789abcdef",
-      action: "Sell",
-      outcome: "No",
-      quantity: 3,
-      txId: "0xfedcba9876543210",
-    },
-    {
-      walletId: "0xabcdef123456",
-      action: "Add",
-      outcome: "LP Tokens",
-      quantity: 10,
-      txId: "0x9876543210abcdef",
-    },
-    {
-      walletId: "0xfedcba9876543210",
-      action: "Remove",
-      outcome: "Yes",
-      quantity: 2,
-      txId: "0xabcdef1234567890",
-    },
-    {
-      walletId: "0x0123456789abcdef",
-      action: "Buy",
-      outcome: "No",
-      quantity: 7,
-      txId: "0x1234567890abcdef",
-    },
-    {
-      walletId: "0xfedcba9876543210",
-      action: "Sell",
-      outcome: "LP Tokens",
-      quantity: 4,
-      txId: "0xabcdef0123456789",
-    },
-    {
-      walletId: "0xabcdef123456",
-      action: "Add",
-      outcome: "Yes",
-      quantity: 9,
-      txId: "0x4567890abcdef123",
-    },
-    {
-      walletId: "0x0123456789abcdef",
-      action: "Remove",
-      outcome: "No",
-      quantity: 1,
-      txId: "0xcdef01234567890ab",
-    },
-    {
-      walletId: "0xfedcba9876543210",
-      action: "Buy",
-      outcome: "LP Tokens",
-      quantity: 6,
-      txId: "0x567890abcdef0123",
-    },
-    {
-      walletId: "0xabcdef123456",
-      action: "Sell",
-      outcome: "Yes",
-      quantity: 8,
-      txId: "0x90123456789abcdef",
-    },
+    }
   ];
   const [BuySellToggle, setBuySellToggle] = useState("buy");
 
@@ -973,7 +903,41 @@ export default function EventPage() {
                       <h3 className="text-lg">Invested</h3>
                       <h3 className="text-lg">$0.10</h3>
                     </div>
+                    {
+                      outcome.lowerBound === outcome.upperBound ? (
+                        <div className="flex justify-between w-full items-center mt-2 ml-2">
+                          <div className="flex items-center space-x-2">
+                            <h3 className="text-lg font-semibold text-white">
+                              Bounds:
+                            </h3>
+                            <p className="text-white text-base font-light">
+                              {outcome.lowerBound}
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex justify-between w-full items-center mt-2">
+                          <div className="flex items-center space-x-2">
+                            <h3 className="text-lg font-semibold text-white">
+                              Lower Bound:
+                            </h3>
+                            <p className="text-white text-base font-light">
+                              {contractEventData.expectedValueLowerBound[index]}
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <h3 className="text-lg font-semibold text-white">
+                              Upper Bound:
+                            </h3>
+                            <p className="text-white text-base font-light">
+                              {contractEventData.expectedValueUpperBound[index]}
+                            </p>
+                          </div>
+                        </div>
+                      )
+                    }
                   </div>
+
                 ))}
               </div>
             </div>
