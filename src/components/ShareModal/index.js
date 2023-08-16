@@ -43,7 +43,7 @@ export default function Index({ opened, setOpened }) {
         </div>
       </div>
       <div className="flex flex-col items-center mt-4 space-y-4">
-        <span>Or share with link</span>
+        <span className="font-semibold">Or share with link</span>
         <div className="flex px-4 py-3 rounded-full bg-[#AEAEAE1A] w-full justify-between">
           <div className="">{truncateString(window.location.href, 35)}</div>
           <FaCopy onClick={() => {
