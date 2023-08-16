@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
+import ShareModal from "../../components/ShareModal"
 import EventImage from "../../assets/event_image.svg";
 import BookmarkEmpty from "../../assets/bookmark_empty.svg";
 import Share from "../../assets/share_icon.svg";
@@ -90,6 +91,8 @@ export default function EventPage() {
   const [outcomeData, setOutcomeData] = useState([]);
   const [contractEventData, setContractEventData] = useState({});
   const [sharePrice, setSharePrice] = useState([]);
+
+  const [shareModalOpened, setShareModalOpened] = useState(false);
 
   useEffect(() => {
     if (Object.keys(contractEventData).length) {
@@ -743,6 +746,7 @@ export default function EventPage() {
   return (
     <div className="event">
       <Navbar />
+      <ShareModal opened={shareModalOpened} setOpened={setShareModalOpened} />
       <div className="ellipse" />
       <div className="event_header">
         <div className="flex w-full gap-4">
@@ -773,7 +777,9 @@ export default function EventPage() {
           </div>
         </div>
         <div className="event_header_outlinkscontainer">
-          <div className="event_header_outlinkscontainer_outlink">
+          <div onClick={() => {
+            setShareModalOpened(true)
+          }} className="event_header_outlinkscontainer_outlink">
             <img src={Share} alt="share" />
           </div>
           <div className="event_header_outlinkscontainer_outlink">
