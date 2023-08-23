@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
+import ShareModal from "../../components/ShareModal"
 import EventImage from "../../assets/event_image.svg";
 import BookmarkEmpty from "../../assets/bookmark_empty.svg";
 import Share from "../../assets/share_icon.svg";
@@ -90,6 +91,8 @@ export default function EventPage() {
   const [outcomeData, setOutcomeData] = useState([]);
   const [contractEventData, setContractEventData] = useState({});
   const [sharePrice, setSharePrice] = useState([]);
+
+  const [shareModalOpened, setShareModalOpened] = useState(false);
 
   useEffect(() => {
     if (Object.keys(contractEventData).length) {
@@ -730,7 +733,7 @@ export default function EventPage() {
       outcome: "Yes",
       quantity: 8,
       txId: "0x90123456789abcdef",
-    },
+    }
   ];
   const [BuySellToggle, setBuySellToggle] = useState("buy");
 
@@ -746,6 +749,7 @@ export default function EventPage() {
   return (
     <div className="event">
       <Navbar />
+      <ShareModal opened={shareModalOpened} setOpened={setShareModalOpened} />
       <div className="ellipse" />
       <div className="event_header">
         <div className="flex w-full gap-4">
@@ -776,7 +780,9 @@ export default function EventPage() {
           </div>
         </div>
         <div className="event_header_outlinkscontainer">
-          <div className="event_header_outlinkscontainer_outlink">
+          <div onClick={() => {
+            setShareModalOpened(true)
+          }} className="event_header_outlinkscontainer_outlink">
             <img src={Share} alt="share" />
           </div>
           <div className="event_header_outlinkscontainer_outlink">
@@ -906,7 +912,41 @@ export default function EventPage() {
                       <h3 className="text-lg">Invested</h3>
                       <h3 className="text-lg">$0.10</h3>
                     </div>
+                    {
+                      outcome.lowerBound === outcome.upperBound ? (
+                        <div className="flex justify-between w-full items-center mt-2 ml-2">
+                          <div className="flex items-center space-x-2">
+                            <h3 className="text-lg font-semibold text-white">
+                              Bounds:
+                            </h3>
+                            <p className="text-white text-base font-light">
+                              {outcome.lowerBound}
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex justify-between w-full items-center mt-2">
+                          <div className="flex items-center space-x-2">
+                            <h3 className="text-lg font-semibold text-white">
+                              Lower Bound:
+                            </h3>
+                            <p className="text-white text-base font-light">
+                              {contractEventData.expectedValueLowerBound[index]}
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <h3 className="text-lg font-semibold text-white">
+                              Upper Bound:
+                            </h3>
+                            <p className="text-white text-base font-light">
+                              {contractEventData.expectedValueUpperBound[index]}
+                            </p>
+                          </div>
+                        </div>
+                      )
+                    }
                   </div>
+
                 ))}
               </div>
             </div>
@@ -960,7 +1000,7 @@ export default function EventPage() {
                 className="event_main_right_holdingcontainer_formcontainer_input"
               />
               <div className="event_main_right_holdingcontainer_formcontainer_value">
-                Available Shares: <span>{sharePrice[selectedOutcomeId] || "0.00000"}</span>
+                Available Shares: <span>{contractEventData.availableOutcomeShares ? contractEventData.availableOutcomeShares[selectedOutcomeId] : "0.00000"}</span>
               </div>
               {BuySellToggle === "buy" ? (
                 <div

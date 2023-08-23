@@ -1,7 +1,7 @@
 import { Modal, SegmentedControl } from "@mantine/core";
 import { useState } from "react";
-import Deposit from "./Deposit";
-import Sell from "./Sell";
+import DepositModal from "./DepositModal";
+import SellModal from "./SellModal";
 
 export default function Index({ fundsModalOpen, setFundsModalOpen }) {
   const [value, setValue] = useState("deposit");
@@ -30,8 +30,8 @@ export default function Index({ fundsModalOpen, setFundsModalOpen }) {
             { label: "Bridge", value: "bridge" },
           ]}
         />
-        {value === "deposit" && <Deposit />}
-        {value === "withdraw" && <Sell />}
+        {value === "deposit" && <DepositModal />}
+        {value === "withdraw" && <SellModal />}
       </div>
     </Modal>
   );

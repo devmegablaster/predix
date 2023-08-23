@@ -122,12 +122,14 @@
           border: 2px solid #252525;
           background: #090909;
           color: #828282;
+          @apply relative;
           &_header {
             display: flex;
             padding: 10px;
             font-weight: bold;
             background: #131416;
             border-bottom: 1px solid black;
+            @apply w-full sticky top-0;
             // &_column {
             //   flex: 1;
             // }
@@ -291,7 +293,7 @@
           }
         }
         &_detailscontainer {
-          @apply flex flex-col mt-4;
+          @apply flex flex-col mt-4 -ml-6 -mr-6 -mb-6 p-6 bg-[#1D1D1D];
           &_details {
             font-size: 14px;
             display: flex;

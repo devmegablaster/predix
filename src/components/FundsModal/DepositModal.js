@@ -33,7 +33,7 @@ const IncrementButton = ({ value, amount, setAmount }) => {
   );
 };
 
-export default function Deposit() {
+export default function DepositModal() {
   const [amount, setAmount] = useState(0);
   const { connection } = useConnection();
   const wallet = useAnchorWallet();

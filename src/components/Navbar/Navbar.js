@@ -10,17 +10,17 @@ import {
   WalletModalProvider,
   WalletMultiButton,
 } from "@solana/wallet-adapter-react-ui";
-import Modal from "../Modal";
+import FundsModal from "../FundsModal";
 
 
 
 export default function Navbar() {
-    const [fundsModalOpen, setFundsModalOpen] = useState(false);
+  const [fundsModalOpen, setFundsModalOpen] = useState(false);
 
   return (
     <>
       {" "}
-      <Modal
+      <FundsModal
         fundsModalOpen={fundsModalOpen}
         setFundsModalOpen={setFundsModalOpen}
       />
