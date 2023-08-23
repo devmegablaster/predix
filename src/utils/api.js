@@ -76,6 +76,21 @@ export default class Api {
       return err.response.data;
     }
   }
+  async addHolding(data) {
+    try {
+      const resp = await Axios({
+        method: "post",
+        url: this.backendURL + `/holding/add`,
+        data,
+      });
+      return resp.data;
+    } catch (err) {
+      if (!err.response) {
+        return "err";
+      }
+      return err.response.data;
+    }
+  }
   async activateMarket(id) {
     try {
       const resp = await Axios({
@@ -90,11 +105,26 @@ export default class Api {
       return err.response.data;
     }
   }
+
   async activateLiquidity(id) {
     try {
       const resp = await Axios({
         method: "put",
         url: this.backendURL + `/liquidity/activate?id=${id}`,
+      });
+      return resp.data;
+    } catch (err) {
+      if (!err.response) {
+        return "err";
+      }
+      return err.response.data;
+    }
+  }
+  async activateHolding(id) {
+    try {
+      const resp = await Axios({
+        method: "put",
+        url: this.backendURL + `/holding/activate?id=${id}`,
       });
       return resp.data;
     } catch (err) {

@@ -441,16 +441,18 @@ export default function EventPage() {
       if (BuySellToggle === "buy") {
         const buyAmount = amountToLamports(buysellValue);
         try {
-          const liquidityData = {
-            walletAddress: publicKey.toBase58(),
-            amount: parseFloat(liquidityValue),
-            type: "Add",
-            marketDetailsId: eventId,
-          };
-          const res = await api.addLiquidity(liquidityData);
+
+                      const holdingData = {
+                        walletAddress: publicKey.toBase58(),
+                        amount: parseFloat(buyAmount),
+                        type: "Buy",
+                        marketDetailsId: eventId,
+                        outcomesId: selectedOutcomeId.toString(),
+                      };
+          const res = await api.addHolding(holdingData);
           if (res.success) {
             console.log(res.data);
-            const liquidityId = String(res.data.liquidityInfo[0].id);
+            const holdingId = String(res.data.holdingInfo[0].holding.id);
 
             if (walletExists) {
               const dm = await program.methods
@@ -492,6 +494,7 @@ export default function EventPage() {
               const tx_add = new Transaction().add(id).add(dm);
               const tx_final_add = await provider.sendAndConfirm(tx_add);
             }
+
             if (!marketExists) {
               let ix1 = await program.methods
                 .initialiseUserState(contractID)
@@ -527,8 +530,8 @@ export default function EventPage() {
               await program.provider.sendAndConfirm(tx);
               console.log(tx);
               if (tx) {
-                const activateLiquidity = await api.activateLiquidity(
-                  liquidityId
+                const activateLiquidity = await api.activateHolding(
+                  holdingId
                 );
                 console.log(activateLiquidity);
               }
@@ -559,8 +562,8 @@ export default function EventPage() {
               await program.provider.sendAndConfirm(tx);
               console.log(tx);
               if (tx) {
-                const activateLiquidity = await api.activateLiquidity(
-                  liquidityId
+                const activateLiquidity = await api.activateHolding(
+                  holdingId
                 );
                 console.log(activateLiquidity);
               }
