@@ -272,9 +272,9 @@
             }
           }
           &_value {
-            @apply font-medium;
+            @apply font-medium flex justify-between;
             color: #646464;
-            span {
+            &_answer {
               color: white;
               &:first-child {
                 @apply mr-4;

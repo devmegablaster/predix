@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
-import ShareModal from "../../components/ShareModal"
+import ShareModal from "../../components/ShareModal";
 import EventImage from "../../assets/event_image.svg";
 import BookmarkEmpty from "../../assets/bookmark_empty.svg";
 import Share from "../../assets/share_icon.svg";
@@ -42,31 +42,30 @@ import Api from "../../utils/api";
 // buy_outcome_share;
 // close_market_with_admin;
 
-const calculateSharePrice = (market_details) => {
-  const index = market_details.totalOutcomes;
-
-  const prod_price_weights = market_details.availableOutcomeShares
-    .slice(0, index)
-    .map((value) => Number(value) / 1000000.0)
-    .reduce((product, value) => product * value, 1);
-
-  console.log("total", index);
-  console.log("price weights", prod_price_weights);
-
-  const weights = new Array(10).fill(0.0);
-
+const calculateSharePrice = (marketData) => {
+  const index = marketData.totalOutcomes;
+  console.log("index",index,marketData);
+  let prodPriceWeights = 1;
   for (let i = 0; i < index; i++) {
-    weights[i] = prod_price_weights / (market_details.availableOutcomeShares[i] / 1_000_000.0);
+    prodPriceWeights =
+      (prodPriceWeights * parseInt(marketData.availableOutcomeShares[i])) /
+      1_000_000;
   }
 
-  const sum_price_weights = weights.slice(0, index).reduce((sum, value) => sum + value, 0);
-
-  const prices = new Array(10).fill(0);
-
+  let weights = new Array(10).fill(0);
+  let sumPriceWeights = 0;
   for (let i = 0; i < index; i++) {
-    prices[i] = Math.round((weights[i] / sum_price_weights * 1_000_000.0));
+    weights[i] =
+      prodPriceWeights /
+      (parseInt(marketData.availableOutcomeShares[i]) / 1_000_000);
+    sumPriceWeights = sumPriceWeights + weights[i];
   }
-
+  let prices = new Array(10).fill(0);
+  for (let i = 0; i < index; i++) {
+    prices[i] = Math.round((weights[i] / sumPriceWeights) * 1_000_000.0);
+  }
+  console.log("======================");
+  console.log(prices);
   return prices;
 };
 
@@ -96,9 +95,9 @@ export default function EventPage() {
 
   useEffect(() => {
     if (Object.keys(contractEventData).length) {
-      setSharePrice(calculateSharePrice(contractEventData))
+      setSharePrice(calculateSharePrice(contractEventData));
     }
-  }, [contractEventData])
+  }, [contractEventData]);
 
   useEffect(() => {
     if (wallet) {
@@ -110,7 +109,6 @@ export default function EventPage() {
     fetchEventData();
   }, []);
   const fetchContractEventData = async (contractID) => {
-
     const program = new Program(ProgramIDL, ProgramID, provider);
     const [eventAccount, eventBump] = PublicKey.findProgramAddressSync(
       [Buffer.from("event"), Buffer.from(contractID)],
@@ -127,8 +125,8 @@ export default function EventPage() {
       totalFeeAmount: marketData.totalFeeAmount.toString(),
       volume: lamportsToAmount(marketData.volume).toString(),
       availableShares: lamportsToAmount(marketData.availableShares).toString(),
-      availableOutcomeShares: marketData.availableOutcomeShares.map(
-        (value) => lamportsToAmount(value).toString()
+      availableOutcomeShares: marketData.availableOutcomeShares.map((value) =>
+        lamportsToAmount(value).toString()
       ),
       totalOutcomeShares: marketData.totalOutcomeShares.map((value) =>
         lamportsToAmount(value).toString()
@@ -137,7 +135,6 @@ export default function EventPage() {
     console.log("useffect market data", convertedMarketData);
 
     setContractEventData(convertedMarketData);
-
   };
   const fetchEventData = async () => {
     try {
@@ -150,8 +147,10 @@ export default function EventPage() {
           data.data?.marketrestructuredResponse[0]?.marketDetails
             ?.marketContractId
         );
-      };
-      if (outcomeData.success) { setOutcomeData(outcomeData.data?.outcomeInfo) };
+      }
+      if (outcomeData.success) {
+        setOutcomeData(outcomeData.data?.outcomeInfo);
+      }
 
       console.log(data.data?.marketrestructuredResponse);
       console.log(data);
@@ -204,7 +203,6 @@ export default function EventPage() {
       console.log(err.message);
       if (err.message.includes("Account does not exist")) return false;
       else return true;
-
     }
   };
   const onAddRemoveClick = async () => {
@@ -365,13 +363,10 @@ export default function EventPage() {
         try {
           if (!marketExists) {
             console.log("There is no liquidity added!");
-            const userBalance =
-              await program.account.userWallet.fetch(
-                userWalletAddress
-              );
-            console.log(
-              lamportsToAmount(userBalance.balance).toString()
+            const userBalance = await program.account.userWallet.fetch(
+              userWalletAddress
             );
+            console.log(lamportsToAmount(userBalance.balance).toString());
           } else {
             let ix = await program.methods
               .removeLiquidity(contractID, vaultBump, userVaultBump, liquidity)
@@ -444,14 +439,13 @@ export default function EventPage() {
       if (BuySellToggle === "buy") {
         const buyAmount = amountToLamports(buysellValue);
         try {
-
-                      const holdingData = {
-                        walletAddress: publicKey.toBase58(),
-                        amount: parseFloat(buyAmount),
-                        type: "Buy",
-                        marketDetailsId: eventId,
-                        outcomesId: selectedOutcomeId.toString(),
-                      };
+          const holdingData = {
+            walletAddress: publicKey.toBase58(),
+            amount: parseFloat(buyAmount),
+            type: "Buy",
+            marketDetailsId: eventId,
+            outcomesId: selectedOutcomeId.toString(),
+          };
           const res = await api.addHolding(holdingData);
           if (res.success) {
             console.log(res.data);
@@ -533,9 +527,7 @@ export default function EventPage() {
               await program.provider.sendAndConfirm(tx);
               console.log(tx);
               if (tx) {
-                const activateLiquidity = await api.activateHolding(
-                  holdingId
-                );
+                const activateLiquidity = await api.activateHolding(holdingId);
                 console.log(activateLiquidity);
               }
             } else {
@@ -545,8 +537,7 @@ export default function EventPage() {
                   buyAmount,
                   selectedOutcomeId,
                   vaultBump,
-                  userVaultBump,
-
+                  userVaultBump
                 )
                 .accounts({
                   authority: publicKey,
@@ -565,9 +556,7 @@ export default function EventPage() {
               await program.provider.sendAndConfirm(tx);
               console.log(tx);
               if (tx) {
-                const activateLiquidity = await api.activateHolding(
-                  holdingId
-                );
+                const activateLiquidity = await api.activateHolding(holdingId);
                 console.log(activateLiquidity);
               }
             }
@@ -581,13 +570,10 @@ export default function EventPage() {
         try {
           if (!marketExists) {
             console.log("There are no shares bought!");
-            const userBalance =
-              await program.account.userWallet.fetch(
-                userWalletAddress
-              );
-            console.log(
-              lamportsToAmount(userBalance.balance).toString()
+            const userBalance = await program.account.userWallet.fetch(
+              userWalletAddress
             );
+            console.log(lamportsToAmount(userBalance.balance).toString());
           } else {
             let ix = await program.methods
               .sellOutcomeShare(
@@ -635,8 +621,8 @@ export default function EventPage() {
         availableShares: lamportsToAmount(
           marketData.availableShares
         ).toString(),
-        availableOutcomeShares: marketData.availableOutcomeShares.map(
-          (value) => lamportsToAmount(value).toString()
+        availableOutcomeShares: marketData.availableOutcomeShares.map((value) =>
+          lamportsToAmount(value).toString()
         ),
         totalOutcomeShares: marketData.totalOutcomeShares.map((value) =>
           lamportsToAmount(value).toString()
@@ -733,7 +719,7 @@ export default function EventPage() {
       outcome: "Yes",
       quantity: 8,
       txId: "0x90123456789abcdef",
-    }
+    },
   ];
   const [BuySellToggle, setBuySellToggle] = useState("buy");
 
@@ -754,7 +740,18 @@ export default function EventPage() {
       <div className="event_header">
         <div className="flex w-full gap-4">
           <div className="event_header_imagecontainer">
-            <img className="w-32 h-32 object-cover" src={Object.keys(eventData)?.length > 0 ? eventData?.marketDetails?.imageURL !== "image" ? "https://ipfs.io/ipfs/" + eventData?.marketDetails?.imageURL : cardData.icon : cardData.icon} alt="event" />
+            <img
+              className="w-32 h-32 object-cover"
+              src={
+                Object.keys(eventData)?.length > 0
+                  ? eventData?.marketDetails?.imageURL !== "image"
+                    ? "https://ipfs.io/ipfs/" +
+                      eventData?.marketDetails?.imageURL
+                    : cardData.icon
+                  : cardData.icon
+              }
+              alt="event"
+            />
           </div>
           <div className="event_header_detailscontainer">
             <div className="event_header_detailscontainer_name">
@@ -780,9 +777,12 @@ export default function EventPage() {
           </div>
         </div>
         <div className="event_header_outlinkscontainer">
-          <div onClick={() => {
-            setShareModalOpened(true)
-          }} className="event_header_outlinkscontainer_outlink">
+          <div
+            onClick={() => {
+              setShareModalOpened(true);
+            }}
+            className="event_header_outlinkscontainer_outlink"
+          >
             <img src={Share} alt="share" />
           </div>
           <div className="event_header_outlinkscontainer_outlink">
@@ -792,7 +792,9 @@ export default function EventPage() {
       </div>
       <div className="event_main">
         <div className="event_main_left">
-          <h1 className="text-white xl:text-3xl text-2xl font-semibold -mt-12">Price Graph</h1>
+          <h1 className="text-white xl:text-3xl text-2xl font-semibold -mt-12">
+            Price Graph
+          </h1>
           <div className="event_main_left_graphcontainer"></div>
           <div className="event_main_left_ordercontainer">
             <div className="event_main_left_ordercontainer_title">
@@ -847,8 +849,9 @@ export default function EventPage() {
               <span>About this market</span>
             </div>
             <div
-              className={`event_main_left_aboutcontainer_expand ${showMore ? "expanded" : ""
-                }`}
+              className={`event_main_left_aboutcontainer_expand ${
+                showMore ? "expanded" : ""
+              }`}
             >
               <div className="event_main_left_aboutcontainer_description">
                 This market will resolve to 'YES' if DeGods NFT floor price is
@@ -897,13 +900,14 @@ export default function EventPage() {
                   <div
                     key={index}
                     onClick={() => {
-                      setSelectedOutcomeId(index)
+                      setSelectedOutcomeId(index);
                       console.log(outcome);
                     }}
-                    className={`flex py-6 flex-col justify-between w-full border cursor-pointer bg-[#090909] rounded-lg px-5 ${selectedOutcomeId === index
-                      ? "selected_card"
-                      : "border-[#252525]"
-                      } `}
+                    className={`flex py-6 flex-col justify-between w-full border cursor-pointer bg-[#090909] rounded-lg px-5 ${
+                      selectedOutcomeId === index
+                        ? "selected_card"
+                        : "border-[#252525]"
+                    } `}
                   >
                     <h2 className="text-white text-lg font-semibold">
                       {outcome.name}
@@ -912,49 +916,47 @@ export default function EventPage() {
                       <h3 className="text-lg">Invested</h3>
                       <h3 className="text-lg">$0.10</h3>
                     </div>
-                    {
-                      outcome.lowerBound === outcome.upperBound ? (
-                        <div className="flex justify-between w-full items-center mt-2 ml-2">
-                          <div className="flex items-center space-x-2">
-                            <h3 className="text-lg font-semibold text-white">
-                              Bounds:
-                            </h3>
-                            <p className="text-white text-base font-light">
-                              {outcome.lowerBound}
-                            </p>
-                          </div>
+                    {outcome.lowerBound === outcome.upperBound ? (
+                      <div className="flex justify-between w-full items-center mt-2 ml-2">
+                        <div className="flex items-center space-x-2">
+                          <h3 className="text-lg font-semibold text-white">
+                            Bounds:
+                          </h3>
+                          <p className="text-white text-base font-light">
+                            {outcome.lowerBound}
+                          </p>
                         </div>
-                      ) : (
-                        <div className="flex justify-between w-full items-center mt-2">
-                          <div className="flex items-center space-x-2">
-                            <h3 className="text-lg font-semibold text-white">
-                              Lower Bound:
-                            </h3>
-                            <p className="text-white text-base font-light">
-                              {contractEventData.expectedValueLowerBound[index]}
-                            </p>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <h3 className="text-lg font-semibold text-white">
-                              Upper Bound:
-                            </h3>
-                            <p className="text-white text-base font-light">
-                              {contractEventData.expectedValueUpperBound[index]}
-                            </p>
-                          </div>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between w-full items-center mt-2">
+                        <div className="flex items-center space-x-2">
+                          <h3 className="text-lg font-semibold text-white">
+                            Lower Bound:
+                          </h3>
+                          <p className="text-white text-base font-light">
+                            {contractEventData.expectedValueLowerBound[index]}
+                          </p>
                         </div>
-                      )
-                    }
+                        <div className="flex items-center space-x-2">
+                          <h3 className="text-lg font-semibold text-white">
+                            Upper Bound:
+                          </h3>
+                          <p className="text-white text-base font-light">
+                            {contractEventData.expectedValueUpperBound[index]}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
-
                 ))}
               </div>
             </div>
 
             <div className="event_main_right_holdingcontainer_yesnobuttons">
               <div
-                className={`event_main_right_holdingcontainer_yesnobuttons_yes ${BuySellToggle === "buy" ? "active_yes" : ""
-                  }`}
+                className={`event_main_right_holdingcontainer_yesnobuttons_yes ${
+                  BuySellToggle === "buy" ? "active_yes" : ""
+                }`}
                 onClick={() => handleButtonClick("buy")}
               >
                 {" "}
@@ -970,8 +972,9 @@ export default function EventPage() {
                 Buy <span>{cardData.yesPrice}</span>
               </div>
               <div
-                className={`event_main_right_holdingcontainer_yesnobuttons_no ${BuySellToggle === "sell" ? "active_no" : ""
-                  }`}
+                className={`event_main_right_holdingcontainer_yesnobuttons_no ${
+                  BuySellToggle === "sell" ? "active_no" : ""
+                }`}
                 onClick={() => handleButtonClick("sell")}
               >
                 {" "}
@@ -999,8 +1002,25 @@ export default function EventPage() {
                 }}
                 className="event_main_right_holdingcontainer_formcontainer_input"
               />
-              <div className="event_main_right_holdingcontainer_formcontainer_value">
-                Available Shares: <span>{contractEventData.availableOutcomeShares ? contractEventData.availableOutcomeShares[selectedOutcomeId] : "0.00000"}</span>
+              <div>
+                <div className="event_main_right_holdingcontainer_formcontainer_value">
+                  <span>Available Shares</span>
+                  <span className="event_main_right_holdingcontainer_formcontainer_value_answer">
+                    {contractEventData.availableOutcomeShares
+                      ? contractEventData.availableOutcomeShares[
+                          selectedOutcomeId
+                        ]
+                      : "0.00000"}
+                  </span>
+                </div>
+                <div className="event_main_right_holdingcontainer_formcontainer_value">
+                  <span>Share Price</span>
+                  <span className="event_main_right_holdingcontainer_formcontainer_value_answer">
+                    {contractEventData.availableOutcomeShares
+                      ? sharePrice[selectedOutcomeId]
+                      : "0.00000"}
+                  </span>
+                </div>
               </div>
               {BuySellToggle === "buy" ? (
                 <div
