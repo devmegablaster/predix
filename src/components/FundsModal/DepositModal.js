@@ -21,10 +21,15 @@ import {
 import { getAccountAddresses } from "../../utils/fundsFunctions.js";
 
 const IncrementButton = ({ value, amount, setAmount }) => {
+
+  const num_value = parseFloat(value)
+  const num_amount = parseFloat(amount)
+
   return (
+    
     <button
       onClick={() => {
-        setAmount(amount + value);
+        setAmount(num_amount + num_value);
       }}
       className="w-full py-2 bg-[#1D1D1D] text-white rounded-lg"
     >
@@ -176,17 +181,26 @@ export default function DepositModal() {
   return (
     <div className="flex flex-col space-y-3 w-full h-full">
       <div className="w-full h-full flex flex-col space-y-3 p-2 border-[#333333] rounded-lg border">
-        <input
-          type="text"
-          className="w-full py-20 bg-[#1D1D1D] text-[#646464] text-3xl font-bold text-center outline-none rounded-lg"
-          placeholder="Enter an Amount"
-          value={amount}
-          onChange={(e) => {
-            const newValue =
-              e.target.value.trim() === "" ? "" : parseFloat(e.target.value);
+      <input
+        type="text"
+        className="w-full py-20 bg-[#1D1D1D] text-[#646464] text-3xl font-bold text-center outline-none rounded-lg"
+        placeholder="Enter an amount"
+        value={amount !== 0 ? `$${amount}` : ""}
+        onChange={(e) => {
+          const trimmedValue = e.target.value.trim();
+          if (trimmedValue === "" || trimmedValue === "$") {
+            setAmount(0);
+          } else if (trimmedValue.startsWith("$")) {
+            const newValue = parseFloat(trimmedValue.substring(1));
             setAmount(newValue);
-          }}
-        />
+          } else {
+            const newValue = parseFloat(trimmedValue);
+            setAmount(newValue);
+          }
+        }}
+      />
+
+
         <div className="grid grid-cols-4 gap-3">
           {buttonValues.map((value) => {
             return (
