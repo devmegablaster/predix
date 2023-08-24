@@ -140,6 +140,17 @@ export default function EventPage() {
         fill: true,
         tension: 0.4,
       },
+      {
+        label: 'lol',
+        data: [0.123, 0.564, 0.986, 0.235, 0.354, 0.246, 0.962, 0.924, 0.579],
+        backgroundColor: 'rgba(128, 128, 128, 0.1)',
+        borderColor: '#2f3482',
+        pointBorderColor: '#2f3482',
+        pointRadius: 5,
+        hoverRadius: 8,
+        fill: true,
+        tension: 0.4,
+      },
     ],
   };
   
@@ -156,19 +167,6 @@ export default function EventPage() {
       },
       tooltip: {
         enabled: true,
-        callbacks: {
-          label: function(context) {
-            const label = context.dataset.label;
-            const value = context.parsed.y.toFixed(3);
-            const index = context.dataIndex;
-            const otherDatasetIndex = 1 - context.datasetIndex; // Switch between 0 and 1
-            const otherValue = graph_data.datasets[otherDatasetIndex].data[index].toFixed(3);
-            const otherLabel = graph_data.datasets[otherDatasetIndex].label;
-
-            
-            return label + ': ' + value + ' | ' + otherLabel + ': ' + otherValue;
-          },
-        },
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         titleFont: {
           size: 16,
