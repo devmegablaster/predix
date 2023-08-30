@@ -100,8 +100,9 @@
         }
       }
       &_graphcontainer {
-        @apply h-96;
-        background-color: #1a1b20;
+        background-color: #1a1d26;
+        border: 2px solid var(--border, #252525);
+        border-radius: 5px;
       }
       &_ordercontainer {
         @apply flex flex-col w-full rounded-lg p-6 gap-2;

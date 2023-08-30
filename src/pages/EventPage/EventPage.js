@@ -37,6 +37,25 @@ import "./EventPage.scss";
 import ToggleAddRemove from "../../components/EventsPage/ToggleAddRemove";
 import ToggleBuySell from "../../components/EventsPage/ToggleBuySell";
 import Api from "../../utils/api";
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Legend,
+  Tooltip
+} from 'chart.js';
+
+ChartJS.register(
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Legend,
+  Tooltip
+)
 
 // remove_liquidity;
 // buy_outcome_share;
@@ -66,6 +85,102 @@ export default function EventPage() {
   const [orderBookData, setOrderBookData] = useState([]);
 
   const [shareModalOpened, setShareModalOpened] = useState(false);
+
+
+
+  const graph_data = {
+    labels: ['Jun, 01', 'Jun, 10', 'Jun, 20', 'Jul, 01', 'Jul, 10', 'Jul, 20', 'Aug, 01', 'Aug, 10', 'Aug, 20'],
+    datasets: [
+      {
+        label: 'Yes',
+        data: [0.245, 0.456, 0.234, 0.225, 0.354, 0.243, 0.423, 0.444, 0.245],
+        backgroundColor: 'rgba(128, 128, 128, 0.1)',
+        borderColor: '#1a6c6e',
+        pointBorderColor: '#1a6c6e',
+        pointRadius: 5,
+        hoverRadius: 8,
+        fill: true,
+        tension: 0.4,
+      },
+      {
+        label: 'No',
+        data: [0.542, 0.354, 0.853, 0.213, 0.645, 0.414, 0.767, 0.924, 0.114],
+        backgroundColor: 'rgba(128, 128, 128, 0.1)',
+        borderColor: '#a35a23',
+        pointBorderColor: '#a35a23',
+        pointRadius: 5,
+        hoverRadius: 8,
+        fill: true,
+        tension: 0.4,
+      },
+      {
+        label: 'lol',
+        data: [0.123, 0.564, 0.986, 0.235, 0.354, 0.246, 0.962, 0.924, 0.579],
+        backgroundColor: 'rgba(128, 128, 128, 0.1)',
+        borderColor: '#2f3482',
+        pointBorderColor: '#2f3482',
+        pointRadius: 5,
+        hoverRadius: 8,
+        fill: true,
+        tension: 0.4,
+      },
+    ],
+  };
+  
+  const options = {
+    plugins: {
+      legend: {
+        display: true,    
+        position: 'bottom',
+        labels: {
+          fontColor: 'white',
+          pointStyle: 'rect',
+          usepointStyle: true,
+        },
+      },
+      tooltip: {
+        enabled: true,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleFont: {
+          size: 16,
+          weight: 'bold',
+        },
+        bodyFont: {
+          size: 14,
+        },
+        padding: 18,
+        borderColor: 'grey', // Border color of the tooltip
+        borderWidth: 1,
+      },
+    },
+    scales: {
+      x: [
+        {
+          grid: {
+            color: 'white', // Set the grid color to grey
+            borderDash: [2, 2], // Set the grid to be dotted
+            drawBorder: true,
+          },
+          ticks: {
+            fontColor: 'white',
+          },
+        },
+      ],
+      y: [
+        {
+          ticks: {
+            stepSize: 1,
+            callback: function(value, index, values) {
+              return value === 0 ? '0' : value === 1 ? '1' : '';
+            },
+          },
+        },
+      ],
+    },
+  };
+  
+  
+  
 
   useEffect(() => {
     if (Object.keys(contractEventData).length) {
@@ -819,10 +934,13 @@ export default function EventPage() {
       </div>
       <div className="event_main">
         <div className="event_main_left">
-          <h1 className="text-white xl:text-3xl text-2xl font-semibold -mt-12">
-            Price Graph
-          </h1>
-          <div className="event_main_left_graphcontainer"></div>
+          <h1 className="text-white xl:text-3xl text-2xl font-semibold -mt-12">Price Graph</h1>
+          <div className="event_main_left_graphcontainer p-4">
+            <Line data ={graph_data}
+            options = {options}
+            ></Line>
+          </div>
+
           <div className="event_main_left_ordercontainer">
             <div className="event_main_left_ordercontainer_title">
               <span>Order Book</span>
