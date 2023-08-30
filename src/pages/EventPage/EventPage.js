@@ -42,33 +42,6 @@ import Api from "../../utils/api";
 // buy_outcome_share;
 // close_market_with_admin;
 
-const calculateSharePrice = (marketData) => {
-  const index = marketData.totalOutcomes;
-  console.log("index",index,marketData);
-  let prodPriceWeights = 1;
-  for (let i = 0; i < index; i++) {
-    prodPriceWeights =
-      (prodPriceWeights * parseInt(marketData.availableOutcomeShares[i])) /
-      1_000_000;
-  }
-
-  let weights = new Array(10).fill(0);
-  let sumPriceWeights = 0;
-  for (let i = 0; i < index; i++) {
-    weights[i] =
-      prodPriceWeights /
-      (parseInt(marketData.availableOutcomeShares[i]) / 1_000_000);
-    sumPriceWeights = sumPriceWeights + weights[i];
-  }
-  let prices = new Array(10).fill(0);
-  for (let i = 0; i < index; i++) {
-    prices[i] = Math.round((weights[i] / sumPriceWeights) * 1_000_000.0);
-  }
-  console.log("======================");
-  console.log(prices);
-  return prices;
-};
-
 export default function EventPage() {
   const api = new Api();
 
@@ -90,6 +63,7 @@ export default function EventPage() {
   const [outcomeData, setOutcomeData] = useState([]);
   const [contractEventData, setContractEventData] = useState({});
   const [sharePrice, setSharePrice] = useState([]);
+  const [orderBookData, setOrderBookData] = useState([]);
 
   const [shareModalOpened, setShareModalOpened] = useState(false);
 
@@ -107,6 +81,7 @@ export default function EventPage() {
   }, [connection, wallet]);
   useEffect(() => {
     fetchEventData();
+    fetchTableData();
   }, []);
   const fetchContractEventData = async (contractID) => {
     const program = new Program(ProgramIDL, ProgramID, provider);
@@ -136,6 +111,33 @@ export default function EventPage() {
 
     setContractEventData(convertedMarketData);
   };
+  const calculateSharePrice = (marketData) => {
+    const index = marketData.totalOutcomes;
+    console.log("index", index, marketData);
+    let prodPriceWeights = 1;
+    for (let i = 0; i < index; i++) {
+      prodPriceWeights =
+        (prodPriceWeights * parseInt(marketData.availableOutcomeShares[i])) /
+        1_000_000;
+    }
+
+    let weights = new Array(10).fill(0);
+    let sumPriceWeights = 0;
+    for (let i = 0; i < index; i++) {
+      weights[i] =
+        prodPriceWeights /
+        (parseInt(marketData.availableOutcomeShares[i]) / 1_000_000);
+      sumPriceWeights = sumPriceWeights + weights[i];
+    }
+    let prices = new Array(10).fill("0");
+    for (let i = 0; i < index; i++) {
+      prices[i] = Math.round((weights[i] / sumPriceWeights) * 1_000_000.0);
+      prices[i] = prices[i] / 1_000_000;
+    }
+    console.log("======================");
+    console.log(prices);
+    return prices;
+  };
   const fetchEventData = async () => {
     try {
       const data = await api.fetchParticularMarket(eventId);
@@ -159,20 +161,45 @@ export default function EventPage() {
       console.log("some error occured");
     }
   };
+  const fetchTableData = async () =>{
+    try{
+        const [liquidityTableData, holdingTableData] = await Promise.all([
+          api.fetchParticularMarketLiquidity(eventId),
+          api.fetchParticularMarketHolding(eventId),
+        ]);;
+      console.log("ltd",liquidityTableData);
+      console.log("htd",holdingTableData);
+        const extractedLiquidityData =
+          liquidityTableData.data.liquidityInfo.map((item, index) => ({
+            walletAddress: item.liquidity.walletAddress,
+            quantity: item.liquidity.amount,
+            type: item.liquidity.type,
+            outcome: "LP Tokens",
+            txId: index+1,
+            createdAt: new Date(item.liquidity.createdAt).getTime(),
+          }));
+
+        // Sort the extracted liquidity data by createdAt in ascending order
+        extractedLiquidityData.sort((a, b) => a.createdAt - b.createdAt);
+        setOrderBookData(extractedLiquidityData);
+
+              // Now you can work with the extracted liquidity data
+              console.log("Extracted Liquidity Data", extractedLiquidityData);
+    }
+    catch(err){
+      console.log(err);
+    }
+  }
 
   const onClick = async () => {
     if (!publicKey) throw new WalletNotConnectedError();
   };
 
   const checkMarketExists = async (program, userStateAddress) => {
-    console.log("user state address", userStateAddress);
-
     try {
       const marketData = await program.account.share.fetch(userStateAddress);
-      console.log(marketData, "user");
 
       if (marketData.marketId) {
-        console.log("market exists");
         return true;
       }
     } catch (err) {
@@ -649,7 +676,7 @@ export default function EventPage() {
     date: "May 31, 2023",
     icon: EventImage,
   };
-  const orderBookData = [
+  const orderBookData_ = [
     {
       walletId: "0xabcdef123456",
       action: "Buy",
@@ -822,22 +849,22 @@ export default function EventPage() {
                 {orderBookData.map((order, index) => (
                   <div
                     className="event_main_left_ordercontainer_table_body_row border-b border-[#252525]"
-                    key={order.txId}
+                    key={order?.txId}
                   >
                     <div className="event_main_left_ordercontainer_table_body_column index_column">
                       {index + 1}
                     </div>
                     <div className="event_main_left_ordercontainer_table_body_column wallet_column">
-                      {order.walletId}
+                      {order?.walletAddress}
                     </div>
                     <div className="event_main_left_ordercontainer_table_body_column action_column">
-                      {order.action}
+                      {order?.type}
                     </div>
                     <div className="event_main_left_ordercontainer_table_body_column outcome_column">
-                      {order.outcome}
+                      {order?.outcome}
                     </div>
                     <div className="event_main_left_ordercontainer_table_body_column quantity_column">
-                      {order.quantity}
+                      {order?.quantity}
                     </div>
                   </div>
                 ))}
@@ -918,14 +945,14 @@ export default function EventPage() {
                     </div>
                     {outcome.lowerBound === outcome.upperBound ? (
                       <div className="flex justify-between w-full items-center mt-2 ml-2">
-                        <div className="flex items-center space-x-2">
+                        {/* <div className="flex items-center space-x-2">
                           <h3 className="text-lg font-semibold text-white">
                             Bounds:
                           </h3>
                           <p className="text-white text-base font-light">
                             {outcome.lowerBound}
                           </p>
-                        </div>
+                        </div> */}
                       </div>
                     ) : (
                       <div className="flex justify-between w-full items-center mt-2">

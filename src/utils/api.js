@@ -148,6 +148,34 @@ export default class Api {
       return err.response.data;
     }
   }
+  async fetchParticularMarketLiquidity(id) {
+    try {
+      const resp = await Axios({
+        method: "get",
+        url: this.backendURL + `/liquidity/fetch/market?marketId=${id}`,
+      });
+      return resp.data;
+    } catch (err) {
+      if (!err.response) {
+        return "err";
+      }
+      return err.response.data;
+    }
+  }
+  async fetchParticularMarketHolding(id) {
+    try {
+      const resp = await Axios({
+        method: "get",
+        url: this.backendURL + `/holding/fetch/market?marketId=${id}`,
+      });
+      return resp.data;
+    } catch (err) {
+      if (!err.response) {
+        return "err";
+      }
+      return err.response.data;
+    }
+  }
   async fetchParticularMarketOutcome(id) {
     try {
       const resp = await Axios({
