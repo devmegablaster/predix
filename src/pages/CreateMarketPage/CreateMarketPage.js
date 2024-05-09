@@ -234,12 +234,14 @@ export default function CreateMarketPage() {
       if (mode === "single") {
         outcomeArray = inputData.outcomesNames.map((outcome, index) => ({
           name: outcome,
+          contractOutcomeId: index + 1,
           lowerBound: lowerBound[index],
           upperBound: upperBound[index],
         }));
       } else if (mode === "range") {
         outcomeArray = inputData.outcomesNames.map((outcome, index) => ({
           name: outcome,
+          contractOutcomeId: index + 1,
           lowerBound: parseFloat(inputData.outcomesLower[index]),
           upperBound: parseFloat(inputData.outcomesUpper[index]),
         }));
@@ -249,9 +251,9 @@ export default function CreateMarketPage() {
         marketName: inputData.name,
         marketContractId: uuidMarket,
         description: inputData.description,
-        categoryId: String(inputData.categoryId),
-        resolutionSourceId: "1",
-        createdBy: publicKey.toBase58(),
+        categoryId: inputData.categoryId,
+        resolutionSourceId: 1,
+        createdBy: 1,
         resolutionSourceURL: inputData.resolutionSource,
         closeTime: inputData.closeDateTime.toISOString(),
         image: res.IpfsHash,

@@ -1,7 +1,7 @@
 import Axios from "axios";
 
 export default class Api {
-  backendURL = "https://0v0iwi8wa3.execute-api.us-east-1.amazonaws.com/dev/v1";
+  backendURL = "http://54.86.64.170:8080/v1";
   async fetchCategories() {
     try {
       const resp = await Axios({
