@@ -14,9 +14,9 @@ import MarketsContainer from "../../components/MarketsContainer/MarketsContainer
 
 export default function MarketsPage() {
   return (
-    <article className="markets">
+    <article className="markets min-h-screen">
       <Navbar />
-      <section className="markets_main">
+      <section className="markets_main h-full">
         <img
           src={MarketsBanner}
           className="markets_main_banner"

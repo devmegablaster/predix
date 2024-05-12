@@ -272,7 +272,7 @@ export default function CreateMarketPage() {
           walletAddress: publicKey.toBase58(),
           amount: parseFloat(inputData.liquidity),
           type: "Add",
-          marketDetailsId: marketId,
+          marketDetailsId: Number(marketId),
         };
         const res = await api.addLiquidity(liquidityData);
         if (res.success) {
@@ -413,6 +413,7 @@ export default function CreateMarketPage() {
       console.log("Your transaction signature", tx2);
       console.log("initial liquidity", ix2);
     } catch (err) {
+      console.log("error here =======================")
       console.log(err);
     }
     try {

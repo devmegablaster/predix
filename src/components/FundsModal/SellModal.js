@@ -158,24 +158,23 @@ export default function SellModal() {
           <p className="text-sm">1 stl = 23.454 USDC</p> */}
         </div>
         <div className="w-full h-1 bg-[#646464] rounded-xl" />
-        <input value={amount} onchange={(e) => {
-          if (value < userBalance) {
+        <input value={amount} onChange={(e) => {
             setAmount(e.target.value)
-          }
         }}
           className="py-20 w-full text-3xl bg-[#1D1D1D] rounded-lg font-semibold text-[#646464] text-center" />
         <Slider
-          value={amount}
-          onChange={(e) => {
-            if (value < userBalance) {
-              setAmount(e.target.value)
-            }
+          value={
+            ((amount * 100) / (userBalance ? userBalance : 1)).toFixed(0)
+          }
+          onChange={(value) => {
+            const amount = (value * userBalance) / 100;
+            setAmount(amount);
           }}
           className="w-[95%] pb-5 mx-auto"
           color="gray"
           marks={[
-            { value: 0, label: "0" },
-            { value: userBalance || 100, label: userBalance?.toString() || "Bal NA" }
+            { value: 0, label: "0%" },
+            { value: 100, label: "100%" }
           ]}
         />
       </div>

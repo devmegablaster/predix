@@ -258,13 +258,20 @@ export default function EventPage() {
       const data = await api.fetchParticularMarket(eventId);
       const outcomeData = await api.fetchParticularMarketOutcome(eventId);
 
+
       if (data.success) {
-        setEventData(data.data?.marketrestructuredResponse[0]);
+        setEventData(data?.data?.marketrestructuredResponse[0]);
+        try{
         await fetchContractEventData(
-          data.data?.marketrestructuredResponse[0]?.marketDetails
+          data?.data?.marketrestructuredResponse[0]?.marketDetails
             ?.marketContractId
         );
+        } catch(err) {  
+          console.log("error in fetching contract data", err);
+        }
       }
+
+
       if (outcomeData.success) {
         setOutcomeData(outcomeData.data?.outcomeInfo);
       }
@@ -973,7 +980,10 @@ export default function EventPage() {
                       {index + 1}
                     </div>
                     <div className="event_main_left_ordercontainer_table_body_column wallet_column">
-                      {order?.walletAddress}
+                      {
+                        order?.walletAddress?.length > 12 ?
+                        order?.walletAddress?.slice(0, 6) + "..." + order?.walletAddress?.slice(-6) : order?.walletAddress
+                      }
                     </div>
                     <div className="event_main_left_ordercontainer_table_body_column action_column">
                       {order?.type}

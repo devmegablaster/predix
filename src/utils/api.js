@@ -190,5 +190,50 @@ export default class Api {
       return err.response.data;
     }
   }
+
+  async fetchLeaderboardByVolume() {
+    try {
+      const resp = await Axios({
+        method: "get",
+        url: this.backendURL + `/leaderBoard/volume`,
+      });
+      return resp.data;
+    } catch (err) {
+      if (!err.response) {
+        return "err";
+      }
+      return err.response.data;
+    }
+  }
+
+  async fetchLeaderboardByLiquidity() {
+    try {
+      const resp = await Axios({
+        method: "get",
+        url: this.backendURL + `/leaderBoard/liquidity`,
+      });
+      return resp.data;
+    } catch (err) {
+      if (!err.response) {
+        return "err";
+      }
+      return err.response.data;
+    }
+  }
+
+  async fetchLeaderboardByProfit() {
+    try {
+      const resp = await Axios({
+        method: "get",
+        url: this.backendURL + `/winingDetails/fetch`,
+      });
+      return resp.data;
+    } catch (err) {
+      if (!err.response) {
+        return "err";
+      }
+      return err.response.data;
+    }
+  }
 }
 
