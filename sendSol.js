@@ -10,7 +10,7 @@ const {
 } = require("@solana/web3.js");
 const spl = require("@solana/spl-token");
 // DEVNET
-const PROGRAM_ID = "9kJt4LPtpxU89UzLo3FxaGbd49Cgvkn5Y2rAhvK1ZJc5";
+const PROGRAM_ID = "DFekiXeVcPTbkjVCYWoPvAfENSFpmUx6BP9csnCprgrT";
 
 // MAINNET
 // const PROGRAM_ID = 'updg8JyjrmFE2h3d71p71zRXDR8q4C6Up8dDoeq3LTM'
